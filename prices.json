@@ -1,0 +1,8 @@
+[
+ {"match":"wagyingo","from":9500,"src":"wagyingohostel.com","rooms":[["1-in-1 (Single)","GHS 9,500"],["2-in-1 (Double)","GHS 11,500"],["3-in-1 (Triple)","GHS 12,000"],["4-in-1 (Quad)","GHS 13,000"],["Study room","GHS 19,000"]]},
+ {"match":"anglican","from":3800,"src":"studentroombook.com","rooms":[]},
+ {"match":"celia","from":3030,"src":"studentroombook.com","rooms":[]},
+ {"match":"crystalrose","from":3900,"src":"studentroombook.com","rooms":[]},
+ {"match":"kharis","from":10000,"src":"studentroombook.com","rooms":[]},
+ {"match":"danleo","from":3030,"src":"studentroombook.com","rooms":[]}
+]

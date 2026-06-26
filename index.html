@@ -11,7 +11,7 @@
   :root{
     --primary:#1E40AF;--primary-2:#3B82F6;--cta:#F59E0B;--cta-press:#D97706;
     --bg:#F1F5F9;--card:#FFFFFF;--text:#0F172A;--muted:#475569;--faint:#64748B;
-    --border:#E2E8F0;--heading:#1E3A8A;--ok:#059669;--warn:#B45309;--danger:#B91C1C;
+    --border:#E2E8F0;--heading:#1E3A8A;--ok:#059669;--warn:#B45309;--star:#F59E0B;
     --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.06);--radius:14px;
   }
   [data-theme="dark"]{--bg:#0B1220;--card:#111A2E;--text:#E5EDF7;--muted:#9FB0C6;--faint:#7E90A8;--border:#1E293B;--heading:#BFDBFE;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
@@ -21,15 +21,6 @@
   a{color:var(--primary-2);text-decoration:none}
   .wrap{max-width:1280px;margin:0 auto;padding:0 18px}
 
-  /* disclaimer */
-  .disc{background:#FEF3C7;color:#7c2d12;border-bottom:1px solid #FCD34D;font-size:13px}
-  [data-theme="dark"] .disc{background:#3a2a06;color:#fde68a;border-color:#854d0e}
-  .disc .wrap{display:flex;gap:12px;align-items:flex-start;padding:10px 18px}
-  .disc svg{flex:none;margin-top:1px}
-  .disc b{color:#9a3412}
-  [data-theme="dark"] .disc b{color:#fcd34d}
-  .disc button{margin-left:auto;flex:none;background:none;border:none;color:inherit;cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
-
   header.top{background:linear-gradient(135deg,#1E3A8A 0%,#1E40AF 55%,#2563EB 100%);color:#fff;position:relative;overflow:hidden}
   header.top::after{content:"";position:absolute;inset:0;background:radial-gradient(900px 380px at 85% -10%,rgba(245,158,11,.22),transparent 60%);pointer-events:none}
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
@@ -38,48 +29,58 @@
   .brand small{display:block;font-weight:400;font-size:12px;opacity:.85}
   .iconbtn{cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:10px;height:38px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px}
   .iconbtn:hover{background:rgba(255,255,255,.22)}
-  .hero{padding:8px 0 26px}
+  .hero{padding:6px 0 24px}
   .hero h1{margin:.1em 0 .15em;font-size:clamp(24px,4vw,40px);line-height:1.08}
   .hero p.sub{margin:0;max-width:62ch;color:#dbeafe;font-size:clamp(13.5px,1.6vw,16px)}
+
+  /* disclaimer — sits right before the search */
+  .disc{background:#FEF3C7;color:#7c2d12;border-bottom:1px solid #FCD34D;font-size:13px}
+  [data-theme="dark"] .disc{background:#3a2a06;color:#fde68a;border-color:#854d0e}
+  .disc .wrap{display:flex;gap:11px;align-items:flex-start;padding:10px 18px}
+  .disc svg{flex:none;margin-top:1px}
+  .disc b{color:#9a3412}[data-theme="dark"] .disc b{color:#fcd34d}
+  .disc button{margin-left:auto;flex:none;background:none;border:none;color:inherit;cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
+
+  /* sticky search + filters */
   .searchbar{position:sticky;top:0;z-index:60;background:var(--card);border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(15,23,42,.06)}
-  .searchbar .wrap{padding:9px 18px}
-  .searchbox{position:relative;max-width:760px;margin:0 auto}
+  .searchbar .wrap{padding:10px 18px}
+  .searchrow{display:flex;gap:9px;align-items:center}
+  .searchbox{position:relative;flex:1 1 auto;min-width:0}
   .searchbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.55}
   #q{width:100%;height:46px;border-radius:11px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 16px 0 44px;font-size:16px;font-family:inherit}
   #q:focus{outline:2px solid var(--primary-2);background:var(--card)}
   .sugg{position:absolute;left:0;right:0;top:52px;background:var(--card);border:1px solid var(--border);border-radius:11px;box-shadow:0 12px 32px rgba(15,23,42,.2);z-index:70;overflow:hidden;display:none}
   .sugg.open{display:block}
   .sugg div{padding:11px 14px;cursor:pointer;font-size:14.5px;color:var(--text);display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border)}
-  .sugg div:last-child{border-bottom:none}
-  .sugg div:hover,.sugg div.active{background:var(--bg)}
+  .sugg div:last-child{border-bottom:none}.sugg div:hover,.sugg div.active{background:var(--bg)}
   .sugg .s-area{color:var(--faint);font-size:12.5px;white-space:nowrap}
-  .totop{position:fixed;right:16px;bottom:16px;z-index:80;width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none;align-items:center;justify-content:center}
-  .totop.show{display:flex}.totop:hover{background:#1b399c}
-
-  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:-26px 0 8px;position:relative;z-index:5}
-  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow)}
-  .kpi .n{font-size:24px;font-weight:700;color:var(--heading);line-height:1}
-  .kpi .l{font-size:12px;color:var(--muted);margin-top:5px}
-
-  .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:15px;margin:16px 0 12px}
+  select{height:46px;border-radius:11px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 11px;font-family:inherit;font-size:14px;cursor:pointer}
+  .fbtn{height:46px;border-radius:11px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 14px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  .fbtn:hover{border-color:var(--primary-2);color:var(--primary)}
+  .fbtn.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .fbadge{background:var(--cta);color:#3a2606;border-radius:999px;font-size:11px;font-weight:700;min-width:18px;height:18px;display:none;align-items:center;justify-content:center;padding:0 5px}
+  .fbadge.show{display:inline-flex}
+  .filterpanel{border-top:1px solid var(--border);margin-top:10px;padding-top:12px;display:none;flex-wrap:wrap;gap:14px;align-items:end}
+  .filterpanel.open{display:flex}
   .field{display:flex;flex-direction:column;gap:5px}
   .field label{font-size:12px;color:var(--muted);font-weight:600}
-  select{height:40px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 11px;font-family:inherit;font-size:14px;cursor:pointer}
-  .chk{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--text);cursor:pointer;height:40px}
+  .chk{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--text);cursor:pointer;height:46px}
   .chk input{width:17px;height:17px;cursor:pointer;accent-color:var(--primary)}
-  .spacer{flex:1 1 auto}
-  .count{font-size:14px;color:var(--muted)}.count b{color:var(--heading)}
-  .amenbar{display:flex;flex-wrap:wrap;gap:7px;padding:0 15px 15px}
+  .amwrap{display:flex;flex-direction:column;gap:6px;width:100%}
+  .amwrap .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .amenbar{display:flex;flex-wrap:wrap;gap:7px}
   .atog{cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:999px;padding:5px 12px;font-size:12.5px;font-family:inherit}
   .atog.on{background:var(--primary);border-color:var(--primary);color:#fff}
 
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:18px 0 8px}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow)}
+  .kpi .n{font-size:24px;font-weight:700;color:var(--heading);line-height:1}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:5px}
+  .count{font-size:14px;color:var(--muted);margin:6px 2px}.count b{color:var(--heading)}
+
   .areas{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 14px}
   .areachip{cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--text)}
-  .areachip:hover{border-color:var(--primary-2)}
-  .areachip .dot{width:9px;height:9px;border-radius:50%}
-  .areachip b{color:var(--heading)}
-
+  .areachip:hover{border-color:var(--primary-2)}.areachip .dot{width:9px;height:9px;border-radius:50%}.areachip b{color:var(--heading)}
   #map{height:380px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:8px;z-index:1}
   .maphint{font-size:12.5px;color:var(--faint);margin:0 2px 16px}
 
@@ -90,6 +91,7 @@
   .card .ph.none{display:flex;align-items:center;justify-content:center;color:#94a3b8}
   .card .tick{position:absolute;top:10px;left:10px;background:var(--ok);color:#fff;border-radius:999px;font-size:11.5px;font-weight:600;padding:3px 9px 3px 7px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
   .card .distb{position:absolute;top:10px;right:10px;background:rgba(15,23,42,.78);color:#fff;border-radius:999px;font-size:11.5px;font-weight:600;padding:3px 9px}
+  .card .pricetag{position:absolute;bottom:10px;left:10px;background:var(--cta);color:#3a2606;border-radius:8px;font-size:12px;font-weight:700;padding:3px 9px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
   .card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
   .card h3{margin:0;font-size:16px;font-weight:600;color:var(--heading);line-height:1.25}
   .row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -108,70 +110,65 @@
   .more{display:block;margin:6px auto 30px;cursor:pointer;background:var(--primary);color:#fff;border:none;border-radius:12px;height:46px;padding:0 26px;font-size:15px;font-weight:600;font-family:inherit}
   .empty{text-align:center;padding:50px;color:var(--muted)}
 
-  /* booking section */
-  .book{margin:8px 0 26px;padding:20px 22px}
-  .book h2{margin:0 0 6px;color:var(--heading);font-size:19px}
-  .book p.l{margin:0 0 16px;color:var(--muted);font-size:14px}
+  .book{margin:8px 0 26px;padding:20px 22px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .book h2{margin:0 0 6px;color:var(--heading);font-size:19px}.book p.l{margin:0 0 16px;color:var(--muted);font-size:14px}
   .bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
   .bstep{border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--bg)}
   .bstep .ic{width:34px;height:34px;border-radius:9px;background:rgba(30,64,175,.1);color:var(--primary);display:grid;place-items:center;margin-bottom:9px}
-  .bstep h4{margin:0 0 5px;font-size:14.5px;color:var(--heading)}
-  .bstep p{margin:0;font-size:13px;color:var(--muted)}
-  .bstep a{font-size:13px;font-weight:600}
+  .bstep h4{margin:0 0 5px;font-size:14.5px;color:var(--heading)}.bstep p{margin:0;font-size:13px;color:var(--muted)}.bstep a{font-size:13px;font-weight:600}
 
-  /* modal */
-  .modal{position:fixed;inset:0;background:rgba(8,12,22,.6);z-index:100;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 14px}
+  /* getrooms-style detail modal */
+  .modal{position:fixed;inset:0;background:rgba(8,12,22,.62);z-index:100;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:26px 14px}
   .modal.open{display:flex}
-  .sheet{background:var(--card);border-radius:18px;max-width:860px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden}
-  .gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-auto-rows:115px;gap:5px;background:#0b1220}
+  .sheet{background:var(--card);border-radius:18px;max-width:980px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.45);overflow:hidden;position:relative}
+  .closex{position:absolute;top:14px;right:16px;z-index:5;background:rgba(255,255,255,.92);border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:20px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+  .gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-auto-rows:130px;gap:5px;background:#0b1220}
   .gal .g0{grid-row:1/3}
-  .gal img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer}
-  .gal .noimg{grid-column:1/4;grid-row:1/3;height:230px;display:flex;align-items:center;justify-content:center;color:#64748b;background:var(--bg)}
-  .sheet .pad{padding:20px 22px}
-  .sheet h2{margin:0 0 8px;color:var(--heading);font-size:24px}
-  .closex{position:absolute;top:16px;right:18px;z-index:110;background:rgba(255,255,255,.9);border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:20px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-  .sec{margin-top:18px}.sec h3{margin:0 0 9px;color:var(--heading);font-size:15px}
-  .amgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-  .amgrid .a{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text)}
-  .amgrid .a svg{color:var(--primary);flex:none}
+  .gal img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;transition:opacity .15s}.gal img:hover{opacity:.92}
+  .gal .noimg{grid-column:1/4;grid-row:1/3;height:220px;display:flex;align-items:center;justify-content:center;color:#64748b;background:var(--bg);gap:8px}
+  .dbody{padding:20px 22px}
+  .dgrid{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+  .dmain h2{margin:0 0 8px;color:var(--heading);font-size:25px;line-height:1.15}
+  .sec{margin-top:20px}.sec h3{margin:0 0 9px;color:var(--heading);font-size:15px}
+  .sec p{margin:0;color:#1e293b;font-size:14.5px}[data-theme="dark"] .sec p{color:var(--text)}
+  .amgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+  .amgrid .a{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text)}.amgrid .a svg{color:var(--primary);flex:none}
+  .rooms{width:100%;border-collapse:collapse;font-size:14px}
+  .rooms td{padding:9px 6px;border-bottom:1px solid var(--border)}.rooms td:last-child{text-align:right;font-weight:600;color:var(--heading)}
   .chips{display:flex;flex-wrap:wrap;gap:7px}
-  .chip{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:12.5px;color:#334155}
-  .mact{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
-  .mact .btn{flex:none;height:42px;padding:0 16px}
+  .chip{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:12.5px;color:#334155}[data-theme="dark"] .chip{color:var(--muted)}
+  #dmap{height:220px;border-radius:12px;border:1px solid var(--border);margin-top:4px}
+  .dside{position:sticky;top:14px;border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--bg)}
+  .dside .price{font-size:14px;color:var(--muted);margin-bottom:4px}
+  .dside .price b{font-size:26px;color:var(--heading);display:block}
+  .dside .nb{font-size:12px;color:var(--faint);margin:2px 0 12px}
+  .dside .btn{width:100%;height:44px;margin-top:9px;flex:none}
   .btn.primary{background:var(--cta);border-color:var(--cta);color:#3a2606}.btn.primary:hover{background:var(--cta-press);color:#2a1a02}
   .btn.dark{background:var(--primary);border-color:var(--primary);color:#fff}.btn.dark:hover{background:#1b399c;color:#fff}
-  .mdisc{margin-top:16px;font-size:12px;color:var(--warn);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 12px}
+  .tickbig{display:inline-flex;align-items:center;gap:5px;background:var(--ok);color:#fff;border-radius:999px;font-size:12px;font-weight:600;padding:4px 10px}
+  .mdisc{margin-top:18px;font-size:12px;color:var(--warn);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 12px}
+  .lb{position:fixed;inset:0;background:rgba(8,12,22,.93);z-index:200;display:none;align-items:center;justify-content:center}
+  .lb.open{display:flex}.lb img{max-width:92vw;max-height:86vh;border-radius:10px}
+  .lb button{position:absolute;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;width:50px;height:50px;border-radius:50%;font-size:24px;cursor:pointer}
+  .lb .prev{left:20px}.lb .next{right:20px}.lb .close{top:20px;right:20px;width:42px;height:42px}
 
-  footer{border-top:1px solid var(--border);background:var(--card);padding:24px 0;margin-top:10px;color:var(--muted);font-size:13px}
-  footer b{color:var(--heading)}
-  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}.field{flex:1 1 46%}select{width:100%}}
+  .totop{position:fixed;right:16px;bottom:16px;z-index:80;width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none;align-items:center;justify-content:center}
+  .totop.show{display:flex}.totop:hover{background:#1b399c}
+  footer{border-top:1px solid var(--border);background:var(--card);padding:24px 0;margin-top:10px;color:var(--muted);font-size:13px}footer b{color:var(--heading)}
+
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(3,1fr)}.dgrid{grid-template-columns:1fr}.dside{position:static}}
   @media(max-width:560px){
     .wrap{padding:0 13px}
-    .kpis{grid-template-columns:repeat(2,1fr);gap:9px;margin-top:-16px}
-    .kpi .n{font-size:21px}.kpi .l{font-size:11.5px}
-    #map{height:300px}
-    .gal{grid-template-columns:1fr 1fr}
-    .controls{gap:10px;padding:13px}
-    .field{flex:1 1 100%}.chk{flex:1 1 46%}
-    .grid{grid-template-columns:1fr;gap:13px}
-    .hero h1{font-size:23px}
-    .sheet h2{font-size:20px}
-    .sheet .pad{padding:16px}
-    .mact .btn{flex:1 1 100%}
-    .disc .wrap{font-size:12.5px;padding:9px 13px}
-    .topbar{padding:11px 0}
-    .book{padding:16px}
+    .searchrow{flex-wrap:wrap}.searchbox{flex:1 1 100%}#area,.fbtn{flex:1 1 46%}
+    .kpis{grid-template-columns:repeat(2,1fr);gap:9px}.kpi .n{font-size:21px}.kpi .l{font-size:11.5px}
+    #map{height:300px}.grid{grid-template-columns:1fr;gap:13px}
+    .hero h1{font-size:23px}.gal{grid-template-columns:1fr 1fr}.dbody{padding:16px}.dmain h2{font-size:21px}
+    .field{flex:1 1 100%}.field select{width:100%}.book{padding:16px}
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="disc" id="disc"><div class="wrap">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
-  <div><b>Independent student project</b> — not affiliated with, endorsed, or approved by KNUST. Prices &amp; manager contacts were scraped or found online and <b>may be wrong or outdated</b>. Always verify by calling, and visit the hostel yourself before paying.</div>
-  <button onclick="document.getElementById('disc').style.display='none'" aria-label="Dismiss">✕</button>
-</div></div>
-
 <header class="top"><div class="wrap">
   <div class="topbar">
     <div class="brand"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span>
@@ -183,71 +180,69 @@
   </div>
   <div class="hero">
     <h1>Find a hostel around KNUST</h1>
-    <p class="sub"><b id="heroCount">501</b> hostels, halls & guest houses — on campus and across Kotei, Ayeduase, Bomso, Boadi & other student areas. Photos, amenities, confirmed manager contacts, and exact Google Maps locations.</p>
+    <p class="sub"><b id="heroCount">501</b> hostels, halls & guest houses — on campus and across Kotei, Ayeduase, Bomso, Boadi & other student areas. Photos, amenities, confirmed manager contacts & exact Google Maps locations.</p>
   </div>
 </div></header>
 
-<div class="searchbar"><div class="wrap"><div class="searchbox">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-  <input id="q" type="text" placeholder="Search hostel name or area…" autocomplete="off" aria-label="Search hostels">
-  <div class="sugg" id="sugg"></div>
-</div></div></div>
+<div class="disc" id="disc"><div class="wrap">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+  <div><b>Independent student project</b> — not affiliated with, endorsed or approved by KNUST. Prices &amp; manager contacts were scraped or found online and <b>may be wrong or outdated</b>. Always call to confirm, and visit the hostel yourself before paying.</div>
+  <button onclick="document.getElementById('disc').style.display='none'" aria-label="Dismiss">✕</button>
+</div></div>
+
+<div class="searchbar"><div class="wrap">
+  <div class="searchrow">
+    <div class="searchbox">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Search hostel name…" autocomplete="off" aria-label="Search hostels">
+      <div class="sugg" id="sugg"></div>
+    </div>
+    <select id="area" aria-label="Area"><option value="">All areas</option></select>
+    <button class="fbtn" id="filterBtn" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      Filters <span class="fbadge" id="fbadge"></span></button>
+  </div>
+  <div class="filterpanel" id="filterpanel">
+    <div class="field"><label for="college">Your college</label><select id="college"><option value="">All colleges</option></select></div>
+    <div class="field"><label for="cat">Type</label><select id="cat"><option value="">All types</option></select></div>
+    <div class="field"><label for="sort">Sort by</label><select id="sort"><option value="dist">Distance to campus</option><option value="rating">Rating</option><option value="reviews">Most reviewed</option><option value="confirmed">Confirmed contact first</option><option value="price">Price (low→high)</option><option value="name">Name A–Z</option></select></div>
+    <label class="chk"><input type="checkbox" id="confonly">Confirmed contact</label>
+    <label class="chk"><input type="checkbox" id="photoonly">Has photo</label>
+    <div class="amwrap"><span class="lbl">Amenities</span><div class="amenbar" id="amenbar"></div></div>
+  </div>
+</div></div>
 
 <main class="wrap">
   <section class="kpis" id="kpis"></section>
+  <div class="count">Showing <b id="shown">0</b> of <span id="tot">0</span> hostels</div>
 
-  <section class="controls panel">
-    <div class="field"><label for="college">Your college</label>
-      <select id="college"><option value="">All colleges</option></select></div>
-    <div class="field"><label for="area">Area</label>
-      <select id="area"><option value="">All areas</option></select></div>
-    <div class="field"><label for="cat">Type</label>
-      <select id="cat"><option value="">All types</option></select></div>
-    <div class="field"><label for="sort">Sort by</label>
-      <select id="sort"><option value="dist">Distance to campus</option><option value="rating">Rating</option><option value="reviews">Most reviewed</option><option value="confirmed">Confirmed contact first</option><option value="name">Name A–Z</option></select></div>
-    <label class="chk"><input type="checkbox" id="confonly">Confirmed contact only</label>
-    <label class="chk"><input type="checkbox" id="photoonly">Has photo</label>
-    <div class="spacer"></div>
-    <div class="count">Showing <b id="shown">0</b> of <span id="tot">0</span></div>
-    <div class="amenbar" id="amenbar" style="width:100%"></div>
-  </section>
-
-  <div style="font-size:12.5px;color:var(--faint);margin:0 2px 6px">Areas covered (click to filter):</div>
+  <div style="font-size:12.5px;color:var(--faint);margin:8px 2px 6px">Areas covered (tap to filter):</div>
   <div class="areas" id="areas"></div>
 
   <div id="map"></div>
-  <p class="maphint">Pins are colour-coded by area. Click a pin for the hostel and a Google Maps link.</p>
+  <p class="maphint">Pins are colour-coded by area. Tap a pin for the hostel and a Google Maps link.</p>
 
   <section class="grid" id="grid"></section>
   <button class="more" id="moreBtn" hidden>Load more</button>
   <div class="empty" id="empty" hidden>No hostels match your filters.</div>
 
-  <section class="panel book">
+  <section class="book">
     <h2>How freshers can book a hostel</h2>
-    <p class="l">First-years (Level 100) are usually placed in traditional halls; most students use private hostels. Here's how to secure a room:</p>
+    <p class="l">First-years are often placed in traditional halls; most students use private hostels. To secure a room:</p>
     <div class="bgrid">
-      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
-        <h4>1. Official KNUST portals</h4><p>Apply for on-campus halls / approved hostels via the university systems.</p>
-        <a href="https://kosass.knust.edu.gh/hostels" target="_blank" rel="noopener">KOSASS ↗</a> &nbsp; <a href="https://kohs.knust.edu.gh/" target="_blank" rel="noopener">KOHS ↗</a></div>
-      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-        <h4>2. Call the manager</h4><p>Use the <b>Call</b> button on a hostel to ask about availability, price & viewing. Green tick = contact confirmed.</p></div>
-      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-        <h4>3. Visit before paying</h4><p>Open <b>Directions</b>, go and inspect the room. Never pay before seeing it in person.</p></div>
-      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg></div>
-        <h4>4. Booking platforms</h4><p>Some hostels list rooms online with photos & prices.</p>
-        <a href="https://getrooms.co/hostels-around-knust/" target="_blank" rel="noopener">GetRooms ↗</a> &nbsp; <a href="https://hostelgig.com" target="_blank" rel="noopener">HostelGig ↗</a></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div><h4>1. Official KNUST portals</h4><p>Apply for halls / approved hostels via the university systems.</p><a href="https://kosass.knust.edu.gh/hostels" target="_blank" rel="noopener">KOSASS ↗</a> &nbsp; <a href="https://kohs.knust.edu.gh/" target="_blank" rel="noopener">KOHS ↗</a></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><h4>2. Call the manager</h4><p>Use the <b>Call</b> button to ask about availability, price &amp; viewing. Green tick = confirmed contact.</p></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h4>3. Visit before paying</h4><p>Open <b>Directions</b>, go and inspect the room. Never pay before seeing it.</p></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg></div><h4>4. Booking platforms</h4><p>Some hostels list rooms with photos &amp; prices online.</p><a href="https://getrooms.co/hostels-around-knust/" target="_blank" rel="noopener">GetRooms ↗</a> &nbsp; <a href="https://studentroombook.com/" target="_blank" rel="noopener">StudentRoomBook ↗</a></div>
     </div>
   </section>
 </main>
 
-<footer><div class="wrap">
-  <p><b>KNUST Hostels Directory</b> · 501 hostels · data generated 2026-06-26 from Google Maps + OpenStreetMap. Independent student project, not affiliated with KNUST. Verify prices &amp; contacts before paying.</p>
-</div></footer>
+<footer><div class="wrap"><p><b>KNUST Hostels Directory</b> · 501 hostels · data from Google Maps + OpenStreetMap, 2026-06-26. Independent student project, not affiliated with KNUST. Verify prices &amp; contacts before paying.</p></div></footer>
 
-<button class="totop" id="totop" aria-label="Back to top" title="Back to top">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
-
+<button class="totop" id="totop" aria-label="Back to top"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="lb" id="lb"><button class="close" onclick="lbClose()" aria-label="Close">✕</button><button class="prev" onclick="lbStep(-1)" aria-label="Previous">‹</button><img id="lbimg" referrerpolicy="no-referrer" alt="Hostel photo"><button class="next" onclick="lbStep(1)" aria-label="Next">›</button></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="data.js"></script>
@@ -258,19 +253,18 @@
   const aColor={}; (M.areas||[]).forEach((a,i)=>aColor[a]=COLORS[i%COLORS.length]);
   const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const tel=p=>(p||'').replace(/[^+\d]/g,'');
-  const thumb=u=>u?u.replace('=w1920-h1080-k-no','=w600-h400-k-no').replace('=w4032-h3024-k-no','=w600-h400-k-no'):u;
+  const thumb=u=>u?u.replace(/=w\d+-h\d+/,'=w600-h400'):u;
   const mapsUrl=r=>r.maps_url||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(r.name+' Kumasi'));
   const dirUrl=r=>`https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}`;
+  const site=w=>!w?'':(/^https?:/.test(w)?w:'https://'+w);
   const star='<svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>';
   const tickSvg='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
-  // KPIs
   document.getElementById('kpis').innerHTML=[
     ['Total hostels',M.total],['Confirmed contacts',M.confirmed],['With photos',M.with_images],
     ['Areas',(M.areas||[]).length],['Colleges',(M.colleges||[]).length],['On campus',M.area_counts['On Campus (KNUST)']||0]
   ].map(k=>`<div class="kpi"><div class="n mono">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
-  document.getElementById('heroCount').textContent=M.total;
-  document.getElementById('tot').textContent=M.total;
+  document.getElementById('heroCount').textContent=M.total;document.getElementById('tot').textContent=M.total;
 
   const colSel=document.getElementById('college'),areaSel=document.getElementById('area'),catSel=document.getElementById('cat');
   (M.colleges||[]).forEach(c=>colSel.add(new Option(c,c)));
@@ -279,13 +273,13 @@
   document.getElementById('amenbar').innerHTML=(M.amenities||[]).map(a=>`<button class="atog" data-a="${esc(a)}">${esc(a)}</button>`).join('');
   document.getElementById('areas').innerHTML=(M.areas||[]).map(a=>`<span class="areachip" data-area="${esc(a)}"><span class="dot" style="background:${aColor[a]}"></span>${esc(a)} <b>${M.area_counts[a]}</b></span>`).join('');
 
-  // map
   const map=L.map('map',{scrollWheelZoom:false}).setView([M.knust.lat,M.knust.lng],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
   L.marker([M.knust.lat,M.knust.lng]).addTo(map).bindPopup('<b>KNUST Campus</b>');
   let markers=L.layerGroup().addTo(map);
 
   let filtered=[];
+  function activeCount(){let n=0;if(colSel.value)n++;if(catSel.value)n++;if(document.getElementById('sort').value!=='dist')n++;if(document.getElementById('confonly').checked)n++;if(document.getElementById('photoonly').checked)n++;n+=activeAmen.size;return n;}
   function apply(){
     const q=document.getElementById('q').value.trim().toLowerCase();
     const col=colSel.value,a=areaSel.value,c=catSel.value,sort=document.getElementById('sort').value;
@@ -297,118 +291,124 @@
       if(confonly&&!r.confirmed)return false;
       if(photoonly&&!(r.images&&r.images.length))return false;
       if(activeAmen.size){for(const am of activeAmen)if(!(r.amenities||[]).includes(am))return false;}
-      if(q){if(!((r.name+' '+r.area+' '+r.category).toLowerCase().includes(q)))return false;}
+      if(q&&!((r.name+' '+r.area+' '+r.category).toLowerCase().includes(q)))return false;
       return true;
     });
     filtered.sort((x,y)=>{
       if(sort==='rating')return (y.rating||0)-(x.rating||0);
       if(sort==='reviews')return (y.reviews||0)-(x.reviews||0);
       if(sort==='name')return x.name.localeCompare(y.name);
+      if(sort==='price')return (x.price_from||1e9)-(y.price_from||1e9);
       if(sort==='confirmed')return (y.confirmed?1:0)-(x.confirmed?1:0)||(x.km_from_knust||9)-(y.km_from_knust||9);
       return (x.km_from_knust||9)-(y.km_from_knust||9);
     });
+    const n=activeCount();const fb=document.getElementById('fbadge');fb.textContent=n;fb.classList.toggle('show',n>0);
+    document.getElementById('filterBtn').classList.toggle('on',n>0);
     shown=PAGE;render();drawMarkers();
   }
 
   function card(r){
-    const ph=r.images&&r.images.length?`<div class="ph" style="background-image:url('${thumb(r.images[0])}')">`:`<div class="ph none">`;
-    const tick=r.confirmed?`<span class="tick">${tickSvg} Confirmed</span>`:'';
-    const noimgIcon=r.images&&r.images.length?'':'<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>';
+    const ph=r.images&&r.images.length?`<div class="ph" style="background-image:url('${thumb(r.images[0])}')">`:`<div class="ph none"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`;
     const rating=r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:`<span class="stars" style="color:var(--faint)">New</span>`;
     const am=(r.amenities||[]).slice(0,3).map(a=>`<span>${esc(a)}</span>`).join('');
-    const callCls=r.confirmed?'btn call':'btn call unv';
     return `<article class="card" data-id="${r._i}">
-      ${ph}${noimgIcon}${tick}${r.km_from_knust!=null?`<span class="distb">${r.km_from_knust} km</span>`:''}</div>
+      ${ph}${r.confirmed?`<span class="tick">${tickSvg} Confirmed</span>`:''}${r.km_from_knust!=null?`<span class="distb">${r.km_from_knust} km</span>`:''}${r.price_from?`<span class="pricetag">from GHS ${r.price_from.toLocaleString()}</span>`:''}</div>
       <div class="body">
         <div class="row"><span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span></div>
         <h3>${esc(r.name)}</h3>
         <div class="row">${rating}</div>
         ${am?`<div class="amini">${am}</div>`:''}
         <div class="cardact" onclick="event.stopPropagation()">
-          ${r.phone?`<a class="${callCls}" href="tel:${tel(r.phone)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>`:''}
-          <a class="btn" href="${mapsUrl(r)}" target="_blank" rel="noopener" aria-label="Map">Map</a>
+          ${r.phone?`<a class="btn call${r.confirmed?'':' unv'}" href="tel:${tel(r.phone)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>`:''}
+          <a class="btn" href="${mapsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Map</a>
         </div>
       </div></article>`;
   }
   function render(){
     const g=document.getElementById('grid'),e=document.getElementById('empty'),m=document.getElementById('moreBtn');
-    document.getElementById('shown').textContent=Math.min(shown,filtered.length);
-    document.getElementById('tot').textContent=filtered.length;
+    document.getElementById('shown').textContent=Math.min(shown,filtered.length);document.getElementById('tot').textContent=filtered.length;
     if(!filtered.length){g.innerHTML='';e.hidden=false;m.hidden=true;return;}
-    e.hidden=true;
-    g.innerHTML=filtered.slice(0,shown).map(card).join('');
+    e.hidden=true;g.innerHTML=filtered.slice(0,shown).map(card).join('');
     m.hidden=shown>=filtered.length;m.textContent=`Load more (${filtered.length-shown})`;
   }
-  function drawMarkers(){
-    markers.clearLayers();
-    filtered.forEach(r=>{if(r.lat==null)return;
-      L.circleMarker([r.lat,r.lng],{radius:6,color:'#fff',weight:1.4,fillColor:aColor[r.area]||'#1E40AF',fillOpacity:.9})
-       .bindPopup(`<b>${esc(r.name)}</b><br>${esc(r.area)}${r.rating?` · ★ ${r.rating.toFixed(1)}`:''}${r.confirmed?' · ✓ confirmed':''}<br><a href="${mapsUrl(r)}" target="_blank" rel="noopener">Google Maps →</a>`).addTo(markers);});
-  }
+  function drawMarkers(){markers.clearLayers();filtered.forEach(r=>{if(r.lat==null)return;
+    L.circleMarker([r.lat,r.lng],{radius:6,color:'#fff',weight:1.4,fillColor:aColor[r.area]||'#1E40AF',fillOpacity:.9})
+     .bindPopup(`<b>${esc(r.name)}</b><br>${esc(r.area)}${r.rating?` · ★ ${r.rating.toFixed(1)}`:''}${r.confirmed?' · ✓':''}<br><a href="${mapsUrl(r)}" target="_blank" rel="noopener">Google Maps →</a>`).addTo(markers);});}
 
-  // detail modal
-  const AICON={'Wi-Fi':'M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01','Parking':'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 17V7h4a3 3 0 0 1 0 6H9','Air-conditioned':'M22 12H2M12 2v20M5 5l4 4M19 5l-4 4M5 19l4-4M19 19l-4-4','Laundry service':'M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM8 6h.01M11 6h.01M12 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8z','Restaurant':'M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2M5 2v20M16 2a4 4 0 0 0-4 4v6h4M16 2v20'};
+  // ---- detail modal (getrooms style) ----
+  const AICON={'Wi-Fi':'M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01','Parking':'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 17V7h4a3 3 0 0 1 0 6H9','Air-conditioned':'M22 12H2M12 2v20M5 5l4 4M19 5l-4 4M5 19l4-4M19 19l-4-4','Laundry service':'M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM12 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8z','Restaurant':'M3 2v7a2 2 0 0 0 2 2 2 2 0 0 0 2-2V2M5 2v20M16 2a4 4 0 0 0-4 4v6h4V2',Kitchen:'M6 2h12v6H6zM6 8v14M18 8v14M9 5h.01','Pool':'M2 12h20M2 17h20M5 12V5a2 2 0 0 1 4 0M15 12V5a2 2 0 0 1 4 0'};
   function amSvg(a){const p=AICON[a]||'M20 6 9 17l-5-5';return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg>`;}
+  function descOf(r){let s=`${r.name} is a ${r.category.toLowerCase()} in ${r.area}`;if(r.km_from_knust!=null)s+=`, about ${r.km_from_knust} km from KNUST campus`;s+='.';if(r.rating)s+=` It has a ${r.rating.toFixed(1)}★ rating from ${r.reviews} Google reviews.`;if(r.review_tags&&r.review_tags.length)s+=` Students often mention ${r.review_tags.slice(0,4).join(', ')}.`;return s;}
+  let lbImgs=[],lbI=0,dmap=null;
   function openModal(r){
-    const imgs=r.images||[];
-    let gal;
-    if(imgs.length){gal='<div class="gal">'+imgs.slice(0,5).map((u,i)=>`<img class="g${i}" src="${thumb(u)}" referrerpolicy="no-referrer" onclick="window.open('${u}','_blank')" alt="${esc(r.name)} photo">`).join('')+'</div>';}
-    else{gal='<div class="gal"><div class="noimg">No photo available on Google yet</div></div>';}
+    const imgs=r.images||[];lbImgs=imgs;
+    const gal=imgs.length?`<div class="gal">${imgs.slice(0,5).map((u,i)=>`<img class="g${i}" src="${thumb(u)}" referrerpolicy="no-referrer" data-i="${i}" alt="${esc(r.name)} photo">`).join('')}</div>`
+      :`<div class="gal"><div class="noimg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>No photo on Google yet</div></div>`;
     const am=(r.amenities||[]).length?`<div class="sec"><h3>Amenities (from Google)</h3><div class="amgrid">${r.amenities.map(a=>`<div class="a">${amSvg(a)}${esc(a)}</div>`).join('')}</div></div>`:'';
+    let roomSec='';
+    if(r.rooms&&r.rooms.length)roomSec=`<div class="sec"><h3>Room types &amp; fees</h3><table class="rooms">${r.rooms.map(rm=>`<tr><td>${esc(rm[0])}</td><td>${esc(rm[1])}</td></tr>`).join('')}</table><p style="font-size:12px;color:var(--faint);margin-top:8px">Indicative — from ${esc(r.price_src||'the hostel website')}. Confirm with the manager.</p></div>`;
+    else if(r.price_from)roomSec=`<div class="sec"><h3>Fees</h3><p>From <b>GHS ${r.price_from.toLocaleString()}</b> per person / academic year (starting price from ${esc(r.price_src||'online')}). Call the manager for room-specific prices.</p></div>`;
     const tags=(r.review_tags||[]).length?`<div class="sec"><h3>What students mention</h3><div class="chips">${r.review_tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div></div>`:'';
-    const conf=r.confirmed?`<span class="tick" style="position:static;background:var(--ok)">${tickSvg} Confirmed contact</span>`:'';
+    const priceCard=r.price_from?`<div class="price">Fees from<b>GHS ${r.price_from.toLocaleString()}</b></div><div class="nb">per person · academic year</div>`:`<div class="price"><b style="font-size:18px">Contact for fees</b></div><div class="nb">prices aren't published online</div>`;
     document.getElementById('sheet').innerHTML=`<button class="closex" onclick="closeModal()">✕</button>${gal}
-      <div class="pad">
-        <div class="row" style="justify-content:space-between"><h2 style="flex:1">${esc(r.name)}</h2></div>
-        <div class="row">${conf}<span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span>${r.km_from_knust!=null?`<span class="badge" style="background:rgba(245,158,11,.14);color:var(--cta-press)">${r.km_from_knust} km to KNUST</span>`:''}${r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:''}</div>
-        <div class="sec"><div class="mact">
-          ${r.phone?`<a class="btn primary" href="tel:${tel(r.phone)}">Call ${r.confirmed?'manager':''} ${esc(r.phone)}</a>`:''}
-          <a class="btn dark" href="${mapsUrl(r)}" target="_blank" rel="noopener">Google Maps</a>
-          <a class="btn" href="${dirUrl(r)}" target="_blank" rel="noopener">Directions</a>
-          ${r.website?`<a class="btn" href="${/^https?:/.test(r.website)?r.website:'https://'+r.website}" target="_blank" rel="noopener">Website</a>`:''}
-        </div></div>
-        ${am}${tags}
-        <div class="sec"><h3>Recommended for</h3><div class="chips">${(r.colleges||[]).map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div></div>
-        <div class="mdisc">Prices aren't shown here because most hostels don't publish them online — <b>call the manager for current fees</b>. Contact may be outdated; verify and inspect before paying. This is an independent student project, not affiliated with KNUST.</div>
+      <div class="dbody"><div class="dgrid">
+        <div class="dmain">
+          <h2>${esc(r.name)}</h2>
+          <div class="row" style="margin-bottom:4px">${r.confirmed?`<span class="tickbig">${tickSvg} Confirmed contact</span>`:''}<span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span>${r.km_from_knust!=null?`<span class="badge" style="background:rgba(245,158,11,.14);color:var(--cta-press)">${r.km_from_knust} km to KNUST</span>`:''}${r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:''}</div>
+          <div class="sec"><h3>About</h3><p>${esc(descOf(r))}</p></div>
+          ${am}${roomSec}${tags}
+          <div class="sec"><h3>Location</h3><div id="dmap"></div><p style="font-size:12.5px;color:var(--faint);margin-top:8px">${esc(r.area)} · ${r.km_from_knust!=null?r.km_from_knust+' km from campus (straight line)':''}</p></div>
+        </div>
+        <aside class="dside">
+          ${priceCard}
+          ${r.phone?`<a class="btn primary" href="tel:${tel(r.phone)}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call ${esc(r.phone)}</a>`:''}
+          <a class="btn dark" href="${mapsUrl(r)}" target="_blank" rel="noopener">View on Google Maps</a>
+          <a class="btn" href="${dirUrl(r)}" target="_blank" rel="noopener">Get directions</a>
+          ${r.website?`<a class="btn" href="${site(r.website)}" target="_blank" rel="noopener">Visit website</a>`:''}
+          <div style="margin-top:14px;font-size:12px;color:var(--faint)">Recommended for</div>
+          <div class="chips" style="margin-top:6px">${(r.colleges||[]).map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>
+        </aside>
+      </div>
+      <div class="mdisc">⚠ Prices &amp; contacts may be outdated (scraped / found online). Call to confirm and visit before paying. Independent student project, not affiliated with KNUST.</div>
       </div>`;
     document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';
+    document.querySelectorAll('#sheet .gal img').forEach(im=>im.addEventListener('click',()=>lbOpen(+im.dataset.i)));
+    if(r.lat){setTimeout(()=>{dmap=L.map('dmap',{scrollWheelZoom:false,attributionControl:false});L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(dmap);dmap.setView([r.lat,r.lng],15);L.marker([r.lat,r.lng]).addTo(dmap);L.circleMarker([M.knust.lat,M.knust.lng],{radius:7,color:'#fff',weight:2,fillColor:'#1E40AF',fillOpacity:1}).addTo(dmap).bindPopup('KNUST');dmap.invalidateSize();},120);}
   }
-  window.closeModal=()=>{document.getElementById('modal').classList.remove('open');document.body.style.overflow='';};
+  window.closeModal=()=>{document.getElementById('modal').classList.remove('open');document.body.style.overflow='';if(dmap){dmap.remove();dmap=null;}};
   document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   document.getElementById('grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openModal(H[+c.dataset.id]);});
+
+  // lightbox
+  function lbOpen(i){lbI=i;document.getElementById('lbimg').src=lbImgs[i];document.getElementById('lb').classList.add('open');}
+  window.lbClose=()=>document.getElementById('lb').classList.remove('open');
+  window.lbStep=d=>{lbI=(lbI+d+lbImgs.length)%lbImgs.length;document.getElementById('lbimg').src=lbImgs[lbI];};
+  document.getElementById('lb').addEventListener('click',e=>{if(e.target.id==='lb')lbClose();});
+  document.addEventListener('keydown',e=>{if(document.getElementById('lb').classList.contains('open')){if(e.key==='Escape')lbClose();if(e.key==='ArrowRight')lbStep(1);if(e.key==='ArrowLeft')lbStep(-1);}else if(e.key==='Escape')closeModal();});
 
   // search suggestions
   const sugg=document.getElementById('sugg'),qel=document.getElementById('q');
-  qel.addEventListener('input',()=>{
-    apply();
-    const v=qel.value.trim().toLowerCase();
-    if(v.length<2){sugg.classList.remove('open');return;}
+  qel.addEventListener('input',()=>{apply();const v=qel.value.trim().toLowerCase();if(v.length<2){sugg.classList.remove('open');return;}
     const hits=H.filter(r=>r.name.toLowerCase().includes(v)).slice(0,8);
     if(!hits.length){sugg.classList.remove('open');return;}
-    sugg.innerHTML=hits.map(r=>`<div data-n="${esc(r.name)}"><span>${esc(r.name)}</span><span class="s-area">${esc(r.area)}</span></div>`).join('');
-    sugg.classList.add('open');
-  });
+    sugg.innerHTML=hits.map(r=>`<div data-n="${esc(r.name)}"><span>${esc(r.name)}</span><span class="s-area">${esc(r.area)}</span></div>`).join('');sugg.classList.add('open');});
   sugg.addEventListener('click',e=>{const d=e.target.closest('div[data-n]');if(d){qel.value=d.dataset.n;sugg.classList.remove('open');apply();}});
   document.addEventListener('click',e=>{if(!e.target.closest('.searchbox'))sugg.classList.remove('open');});
 
-  document.getElementById('amenbar').addEventListener('click',e=>{const b=e.target.closest('.atog');if(!b)return;
-    const a=b.dataset.a;if(activeAmen.has(a)){activeAmen.delete(a);b.classList.remove('on');}else{activeAmen.add(a);b.classList.add('on');}apply();});
+  // filter button toggle
+  const fpanel=document.getElementById('filterpanel'),fbtn=document.getElementById('filterBtn');
+  fbtn.addEventListener('click',()=>{const open=fpanel.classList.toggle('open');fbtn.setAttribute('aria-expanded',open);});
+  document.getElementById('amenbar').addEventListener('click',e=>{const b=e.target.closest('.atog');if(!b)return;const a=b.dataset.a;if(activeAmen.has(a)){activeAmen.delete(a);b.classList.remove('on');}else{activeAmen.add(a);b.classList.add('on');}apply();});
   document.getElementById('areas').addEventListener('click',e=>{const c=e.target.closest('.areachip');if(c){areaSel.value=c.dataset.area;apply();window.scrollTo({top:document.getElementById('map').offsetTop-80,behavior:'smooth'});}});
-  const totop=document.getElementById('totop');
-  window.addEventListener('scroll',()=>totop.classList.toggle('show',window.scrollY>500),{passive:true});
-  totop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
   ['college','area','cat','sort','confonly','photoonly'].forEach(id=>document.getElementById(id).addEventListener('change',apply));
   document.getElementById('moreBtn').addEventListener('click',()=>{shown+=PAGE;render();});
   document.getElementById('themeBtn').addEventListener('click',()=>{const d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'light':'dark');setTimeout(()=>map.invalidateSize(),50);});
-  document.getElementById('csvBtn').addEventListener('click',()=>{
-    const cols=['name','area','category','km_from_knust','rating','reviews','phone','confirmed','website','lat','lng','maps_url'];
-    const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
-    const rows=[cols.join(',')].concat(filtered.map(r=>cols.map(c=>q(r[c])).join(',')));
-    const b=new Blob([rows.join('\r\n')],{type:'text/csv'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='knust_hostels.csv';a.click();});
+  document.getElementById('csvBtn').addEventListener('click',()=>{const cols=['name','area','category','km_from_knust','rating','reviews','phone','confirmed','price_from','website','lat','lng','maps_url'];const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';const rows=[cols.join(',')].concat(filtered.map(r=>cols.map(c=>q(r[c])).join(',')));const b=new Blob([rows.join('\r\n')],{type:'text/csv'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='knust_hostels.csv';a.click();});
+  const totop=document.getElementById('totop');
+  window.addEventListener('scroll',()=>totop.classList.toggle('show',window.scrollY>500),{passive:true});
+  totop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
-  H.forEach((r,i)=>r._i=i);
-  apply();setTimeout(()=>map.invalidateSize(),200);
+  H.forEach((r,i)=>r._i=i);apply();setTimeout(()=>map.invalidateSize(),200);
 })();
 </script>
 </body>

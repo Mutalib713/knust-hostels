@@ -11,6 +11,7 @@ r2 = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-ge
 sy = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782509233568.txt'), encoding='utf-8'))['items']
 full = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782511669631.txt'), encoding='utf-8'))['items']
 managers = json.load(open(os.path.join(OUT,'managers.json'), encoding='utf-8'))
+PRICES = json.load(open(os.path.join(OUT,'prices.json'), encoding='utf-8'))
 
 R2 = {it['placeId']: it for it in r2 if it.get('placeId')}
 SY = {it['placeId']: it for it in sy if it.get('placeId')}
@@ -86,6 +87,12 @@ def match_manager(name):
                 best = m
     return best
 
+def price_for(name):
+    n = norm(name)
+    for p in PRICES:
+        if p['match'] in n: return p
+    return None
+
 clean = []
 matched = 0
 amen_universe = {}
@@ -110,6 +117,9 @@ for r in tight:
         'confirmed': confirmed,
         'images': imgs, 'amenities': am, 'review_tags': tags,
         'colleges': colleges_for(r['area']),
+        'price_from': (price_for(r['name']) or {}).get('from'),
+        'rooms': (price_for(r['name']) or {}).get('rooms') or [],
+        'price_src': (price_for(r['name']) or {}).get('src') or '',
     })
 
 clean.sort(key=lambda r: (r['area'], -1 if r['confirmed'] else 0, -(r['rating'] or 0)))
@@ -126,6 +136,7 @@ meta = {
     'with_images': sum(1 for r in clean if r['images']),
     'with_amenities': sum(1 for r in clean if r['amenities']),
     'with_phone': sum(1 for r in clean if r['phone']),
+    'with_price': sum(1 for r in clean if r['price_from']),
     'knust': {'lat':6.6745,'lng':-1.5716},
 }
 with open(os.path.join(OUT,'data.js'),'w',encoding='utf-8') as f:
