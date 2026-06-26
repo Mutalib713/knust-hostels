@@ -9,10 +9,12 @@ TR  = r'C:\Users\mutal\.claude\projects\C--Users-mutal-skills\35adc9b3-602b-448c
 tight = json.load(open(os.path.join(OUT,'hostels_tight.json'), encoding='utf-8'))
 r2 = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782509230263.txt'), encoding='utf-8'))['items']
 sy = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782509233568.txt'), encoding='utf-8'))['items']
+full = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782511669631.txt'), encoding='utf-8'))['items']
 managers = json.load(open(os.path.join(OUT,'managers.json'), encoding='utf-8'))
 
 R2 = {it['placeId']: it for it in r2 if it.get('placeId')}
 SY = {it['placeId']: it for it in sy if it.get('placeId')}
+FULL = {it['placeId']: it for it in full if it.get('placeId')}  # complete 501 run (galleries + amenities)
 
 def pid(r):
     q = urllib.parse.urlparse(r['maps_url']).query
@@ -39,16 +41,16 @@ def amenities(it):
     return sorted(out)
 
 def images(p):
-    s = SY.get(p) or {}
-    urls = [u for u in (s.get('imageUrls') or []) if 'googleusercontent' in u][:4]
-    if not urls:
-        iu = (R2.get(p) or {}).get('imageUrl')
-        if iu and 'googleusercontent' in iu:
-            urls = [iu]
-    return urls
+    for src in (FULL.get(p), SY.get(p)):
+        urls = [u for u in ((src or {}).get('imageUrls') or []) if 'googleusercontent' in u][:4]
+        if urls: return urls
+    for src in (FULL.get(p), R2.get(p)):
+        iu = (src or {}).get('imageUrl')
+        if iu and 'googleusercontent' in iu: return [iu]
+    return []
 
 def review_tags(p):
-    src = (SY.get(p) or {}).get('reviewsTags') or (R2.get(p) or {}).get('reviewsTags') or []
+    src = (FULL.get(p) or {}).get('reviewsTags') or (SY.get(p) or {}).get('reviewsTags') or (R2.get(p) or {}).get('reviewsTags') or []
     return [t['title'] for t in src if isinstance(t, dict) and t.get('title')][:8]
 
 # ---- college -> areas (which side of campus each college's gate is on) ----
@@ -89,7 +91,7 @@ matched = 0
 amen_universe = {}
 for r in tight:
     p = pid(r)
-    am = amenities(R2.get(p)) or amenities(SY.get(p))
+    am = amenities(FULL.get(p)) or amenities(R2.get(p)) or amenities(SY.get(p))
     am = sorted(set(am))
     imgs = images(p)
     tags = review_tags(p)

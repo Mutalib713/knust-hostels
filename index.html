@@ -38,19 +38,23 @@
   .brand small{display:block;font-weight:400;font-size:12px;opacity:.85}
   .iconbtn{cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:10px;height:38px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px}
   .iconbtn:hover{background:rgba(255,255,255,.22)}
-  .hero{padding:10px 0 30px}
-  .hero h1{margin:.1em 0 .15em;font-size:clamp(25px,4vw,40px);line-height:1.08}
-  .hero p.sub{margin:0 0 18px;max-width:62ch;color:#dbeafe;font-size:clamp(14px,1.6vw,16px)}
-  .searchwrap{position:relative;max-width:640px}
-  .searchbox{position:relative}
-  .searchbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.6}
-  #q{width:100%;height:52px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:#fff;color:#0f172a;padding:0 16px 0 44px;font-size:16px;font-family:inherit;box-shadow:var(--shadow)}
-  #q:focus{outline:3px solid var(--cta)}
-  .sugg{position:absolute;left:0;right:0;top:56px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);z-index:40;overflow:hidden;display:none}
+  .hero{padding:8px 0 26px}
+  .hero h1{margin:.1em 0 .15em;font-size:clamp(24px,4vw,40px);line-height:1.08}
+  .hero p.sub{margin:0;max-width:62ch;color:#dbeafe;font-size:clamp(13.5px,1.6vw,16px)}
+  .searchbar{position:sticky;top:0;z-index:60;background:var(--card);border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(15,23,42,.06)}
+  .searchbar .wrap{padding:9px 18px}
+  .searchbox{position:relative;max-width:760px;margin:0 auto}
+  .searchbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.55}
+  #q{width:100%;height:46px;border-radius:11px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 16px 0 44px;font-size:16px;font-family:inherit}
+  #q:focus{outline:2px solid var(--primary-2);background:var(--card)}
+  .sugg{position:absolute;left:0;right:0;top:52px;background:var(--card);border:1px solid var(--border);border-radius:11px;box-shadow:0 12px 32px rgba(15,23,42,.2);z-index:70;overflow:hidden;display:none}
   .sugg.open{display:block}
-  .sugg div{padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text);display:flex;justify-content:space-between;gap:10px}
+  .sugg div{padding:11px 14px;cursor:pointer;font-size:14.5px;color:var(--text);display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border)}
+  .sugg div:last-child{border-bottom:none}
   .sugg div:hover,.sugg div.active{background:var(--bg)}
-  .sugg .s-area{color:var(--faint);font-size:12.5px}
+  .sugg .s-area{color:var(--faint);font-size:12.5px;white-space:nowrap}
+  .totop{position:fixed;right:16px;bottom:16px;z-index:80;width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none;align-items:center;justify-content:center}
+  .totop.show{display:flex}.totop:hover{background:#1b399c}
 
   .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:-26px 0 8px;position:relative;z-index:5}
   .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow)}
@@ -140,8 +144,24 @@
 
   footer{border-top:1px solid var(--border);background:var(--card);padding:24px 0;margin-top:10px;color:var(--muted);font-size:13px}
   footer b{color:var(--heading)}
-  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}}
-  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr);margin-top:-18px}#map{height:300px}.gal{grid-template-columns:1fr 1fr}}
+  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}.field{flex:1 1 46%}select{width:100%}}
+  @media(max-width:560px){
+    .wrap{padding:0 13px}
+    .kpis{grid-template-columns:repeat(2,1fr);gap:9px;margin-top:-16px}
+    .kpi .n{font-size:21px}.kpi .l{font-size:11.5px}
+    #map{height:300px}
+    .gal{grid-template-columns:1fr 1fr}
+    .controls{gap:10px;padding:13px}
+    .field{flex:1 1 100%}.chk{flex:1 1 46%}
+    .grid{grid-template-columns:1fr;gap:13px}
+    .hero h1{font-size:23px}
+    .sheet h2{font-size:20px}
+    .sheet .pad{padding:16px}
+    .mact .btn{flex:1 1 100%}
+    .disc .wrap{font-size:12.5px;padding:9px 13px}
+    .topbar{padding:11px 0}
+    .book{padding:16px}
+  }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -164,13 +184,14 @@
   <div class="hero">
     <h1>Find a hostel around KNUST</h1>
     <p class="sub"><b id="heroCount">501</b> hostels, halls & guest houses — on campus and across Kotei, Ayeduase, Bomso, Boadi & other student areas. Photos, amenities, confirmed manager contacts, and exact Google Maps locations.</p>
-    <div class="searchwrap">
-      <div class="searchbox"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="q" type="text" placeholder="Search hostel name or area…" autocomplete="off" aria-label="Search hostels"></div>
-      <div class="sugg" id="sugg"></div>
-    </div>
   </div>
 </div></header>
+
+<div class="searchbar"><div class="wrap"><div class="searchbox">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input id="q" type="text" placeholder="Search hostel name or area…" autocomplete="off" aria-label="Search hostels">
+  <div class="sugg" id="sugg"></div>
+</div></div></div>
 
 <main class="wrap">
   <section class="kpis" id="kpis"></section>
@@ -222,6 +243,9 @@
 <footer><div class="wrap">
   <p><b>KNUST Hostels Directory</b> · 501 hostels · data generated 2026-06-26 from Google Maps + OpenStreetMap. Independent student project, not affiliated with KNUST. Verify prices &amp; contacts before paying.</p>
 </div></footer>
+
+<button class="totop" id="totop" aria-label="Back to top" title="Back to top">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 
@@ -366,11 +390,14 @@
     sugg.classList.add('open');
   });
   sugg.addEventListener('click',e=>{const d=e.target.closest('div[data-n]');if(d){qel.value=d.dataset.n;sugg.classList.remove('open');apply();}});
-  document.addEventListener('click',e=>{if(!e.target.closest('.searchwrap'))sugg.classList.remove('open');});
+  document.addEventListener('click',e=>{if(!e.target.closest('.searchbox'))sugg.classList.remove('open');});
 
   document.getElementById('amenbar').addEventListener('click',e=>{const b=e.target.closest('.atog');if(!b)return;
     const a=b.dataset.a;if(activeAmen.has(a)){activeAmen.delete(a);b.classList.remove('on');}else{activeAmen.add(a);b.classList.add('on');}apply();});
-  document.getElementById('areas').addEventListener('click',e=>{const c=e.target.closest('.areachip');if(c){areaSel.value=c.dataset.area;apply();window.scrollTo({top:document.getElementById('map').offsetTop-10,behavior:'smooth'});}});
+  document.getElementById('areas').addEventListener('click',e=>{const c=e.target.closest('.areachip');if(c){areaSel.value=c.dataset.area;apply();window.scrollTo({top:document.getElementById('map').offsetTop-80,behavior:'smooth'});}});
+  const totop=document.getElementById('totop');
+  window.addEventListener('scroll',()=>totop.classList.toggle('show',window.scrollY>500),{passive:true});
+  totop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
   ['college','area','cat','sort','confonly','photoonly'].forEach(id=>document.getElementById(id).addEventListener('change',apply));
   document.getElementById('moreBtn').addEventListener('click',()=>{shown+=PAGE;render();});
   document.getElementById('themeBtn').addEventListener('click',()=>{const d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'light':'dark');setTimeout(()=>map.invalidateSize(),50);});

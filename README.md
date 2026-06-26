@@ -6,6 +6,16 @@ each grouped by its **real location** and pinned to its **exact Google Maps spot
 
 **Generated:** 2026-06-26 · **Total:** 501 places (on campus + within ~6 km) · **46 on campus + 16 in Gaza**.
 
+## What's in the dashboard
+
+Photos for ~352 hostels, **confirmed manager contacts** (green tick) from the SRC list,
+a getrooms-style **detail view** (photo gallery, amenities, student review themes, call/map/directions),
+filters by **college / area / type / amenities / confirmed-only / has-photo**, search-as-you-type
+**suggestions**, an interactive **map**, a **sticky search bar**, **mobile-responsive** layout,
+a **back-to-top** button, a safety **disclaimer**, and a "how freshers book" guide.
+
+> Prices aren't shown for most hostels because they aren't published online — call the manager for current fees.
+
 ## How to use
 
 - **`index.html`** — open in any browser. Interactive dashboard with search, area/type
