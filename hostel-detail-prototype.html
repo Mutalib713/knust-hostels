@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wagyingo Main Hostel — KNUST Hostels Directory</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#1E40AF;--primary-2:#3B82F6;--cta:#F59E0B;--cta-press:#D97706;
+    --bg:#F1F5F9;--card:#FFFFFF;--text:#0F172A;--muted:#475569;--faint:#64748B;
+    --border:#E2E8F0;--heading:#1E3A8A;--ok:#059669;--star:#F59E0B;
+    --shadow:0 1px 2px rgba(15,23,42,.06),0 6px 20px rgba(15,23,42,.07);--radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Fira Sans",system-ui,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .mono{font-family:"Fira Code",monospace;font-variant-numeric:tabular-nums}
+  a{color:var(--primary-2);text-decoration:none}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 18px}
+  .topnav{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+  .topnav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .back{display:inline-flex;align-items:center;gap:8px;color:var(--heading);font-weight:600;font-size:14px;cursor:pointer}
+  .back:hover{color:var(--primary)}
+  .brandmini{font-weight:700;color:var(--heading);display:flex;align-items:center;gap:9px}
+  .brandmini .logo{width:30px;height:30px;border-radius:8px;background:var(--primary);display:grid;place-items:center}
+
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;margin:18px 0 22px;height:380px}
+  .gallery .g{position:relative;overflow:hidden;border-radius:12px;cursor:pointer;background:#dbe2ea}
+  .gallery .g:first-child{grid-row:1/3}
+  .gallery img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+  .gallery .g:hover img{transform:scale(1.05)}
+  .gallery .more{position:absolute;inset:0;background:rgba(15,23,42,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;gap:8px}
+
+  .layout{display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:start;padding-bottom:50px}
+  .head h1{margin:0 0 6px;font-size:30px;color:var(--heading);line-height:1.12}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:999px}
+  .badge.area{background:rgba(30,64,175,.1);color:var(--primary)}
+  .badge.cat{background:rgba(59,130,246,.12);color:var(--primary-2)}
+  .badge.dist{background:rgba(245,158,11,.14);color:var(--cta-press)}
+  .loc{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;margin-top:8px}
+  .section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-top:18px;box-shadow:var(--shadow)}
+  .section h2{margin:0 0 14px;font-size:18px;color:var(--heading)}
+  .section p{margin:0 0 10px;color:#1e293b}
+  .amen{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px}
+  .amen .a{display:flex;align-items:center;gap:11px;font-size:14.5px;color:#1e293b}
+  .amen .a svg{flex:none;color:var(--primary)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:6px 13px;font-size:13px;color:#334155;display:inline-flex;align-items:center;gap:7px}
+  .chip b{color:var(--heading)}
+  .rooms{width:100%;border-collapse:collapse;font-size:14.5px}
+  .rooms th,.rooms td{text-align:left;padding:11px 6px;border-bottom:1px solid var(--border)}
+  .rooms th{color:var(--faint);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+  .rooms td:last-child,.rooms th:last-child{text-align:right;font-weight:600;color:var(--heading)}
+  .rating-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .big-score{font-size:46px;font-weight:700;color:var(--heading);line-height:1}
+  .stars{color:var(--star);letter-spacing:2px;font-size:18px}
+  .dist-bars{flex:1;min-width:230px}
+  .dbar{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);margin:3px 0}
+  .dbar .track{flex:1;height:8px;background:var(--bg);border-radius:6px;overflow:hidden}
+  .dbar .fill{height:100%;background:var(--star);border-radius:6px}
+  #map{height:280px;border-radius:12px;border:1px solid var(--border);margin-top:4px}
+
+  /* booking card */
+  .book{position:sticky;top:78px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .price{font-size:15px;color:var(--muted)}
+  .price b{font-size:27px;color:var(--heading)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:48px;border-radius:11px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);margin-top:10px;transition:all .18s;text-decoration:none}
+  .btn:hover{border-color:var(--primary-2);color:var(--primary)}
+  .btn.primary{background:var(--cta);border-color:var(--cta);color:#3a2606}
+  .btn.primary:hover{background:var(--cta-press);border-color:var(--cta-press)}
+  .btn.dark{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.dark:hover{background:#1b399c;color:#fff}
+  .book .meta{font-size:13px;color:var(--faint);margin-top:14px;display:flex;align-items:center;gap:7px;justify-content:center}
+
+  /* lightbox */
+  .lb{position:fixed;inset:0;background:rgba(8,12,22,.92);z-index:200;display:none;align-items:center;justify-content:center}
+  .lb.open{display:flex}
+  .lb img{max-width:90vw;max-height:84vh;border-radius:10px}
+  .lb button{position:absolute;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;width:52px;height:52px;border-radius:50%;font-size:24px;cursor:pointer}
+  .lb .prev{left:24px}.lb .next{right:24px}.lb .close{top:24px;right:24px;width:44px;height:44px}
+  .lb .cap{position:absolute;bottom:26px;color:#cbd5e1;font-size:13px}
+
+  @media(max-width:900px){.layout{grid-template-columns:1fr}.book{position:static}.gallery{height:300px}}
+  @media(max-width:560px){.gallery{grid-template-columns:1fr 1fr;grid-template-rows:160px 110px}.gallery .g:first-child{grid-column:1/3;grid-row:1}.gallery .g:nth-child(4),.gallery .g:nth-child(5){display:none}.head h1{font-size:24px}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<nav class="topnav"><div class="wrap">
+  <span class="back" onclick="history.length>1?history.back():location.href='index.html'">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to all hostels</span>
+  <span class="brandmini"><span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span>KNUST Hostels</span>
+</div></nav>
+
+<main class="wrap">
+  <section class="gallery" id="gallery"></section>
+
+  <div class="layout">
+    <div class="content">
+      <div class="head">
+        <h1>Wagyingo Main Hostel</h1>
+        <div class="badges">
+          <span class="badge area"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ayeduase</span>
+          <span class="badge cat">Hostel</span>
+          <span class="badge dist">1.1 km to KNUST</span>
+        </div>
+        <div class="loc">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Dx 32 Kingdom St, Ayeduase (Atta Mills Junction), Kumasi · <span class="mono">MCFQ+W8</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>About this hostel</h2>
+        <p>Wagyingo Main Hostel is the flagship of Wagyingo's three KNUST properties, sitting at Ayeduase (Atta&nbsp;Mills Junction), about a 1.1&nbsp;km walk to the Ayeduase gate. It's built around the promise of "comfort, security and academic excellence in modern accommodation."</p>
+        <p>Students consistently highlight its <b>spacious rooms</b>, strong <b>security</b> and quiet, "home&nbsp;away&nbsp;from&nbsp;home" feel. Rooms range from single through quad, plus dedicated study rooms, with Wi-Fi and a gaming area on site across its multiple floors.</p>
+      </div>
+
+      <div class="section">
+        <h2>Amenities &amp; facilities</h2>
+        <div class="amen" id="amen"></div>
+      </div>
+
+      <div class="section">
+        <h2>Room types &amp; fees</h2>
+        <table class="rooms">
+          <thead><tr><th>Room type</th><th>Fee (GHS / academic year)</th></tr></thead>
+          <tbody id="rooms"></tbody>
+        </table>
+        <p style="font-size:12.5px;color:var(--faint);margin-top:10px">Indicative fees from the hostel's official website — confirm current prices directly with management.</p>
+      </div>
+
+      <div class="section">
+        <h2>Ratings &amp; what students say</h2>
+        <div class="rating-wrap">
+          <div style="text-align:center">
+            <div class="big-score">4.2</div>
+            <div class="stars">★★★★<span style="color:#cbd5e1">★</span></div>
+            <div style="font-size:12.5px;color:var(--faint);margin-top:4px">503 Google reviews</div>
+          </div>
+          <div class="dist-bars" id="dist"></div>
+        </div>
+        <div style="margin-top:16px">
+          <div style="font-size:13px;color:var(--faint);margin-bottom:8px">Most mentioned by students</div>
+          <div class="chips" id="tags"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Location</h2>
+        <div id="map"></div>
+        <p style="font-size:13px;color:var(--muted);margin-top:12px">Straight-line ~1.1 km from KNUST campus centre. Use the buttons to open the exact spot or get directions.</p>
+      </div>
+    </div>
+
+    <aside>
+      <div class="book">
+        <div class="price">Fees from <b>GHS 9,500</b><br><span style="font-size:12.5px">per person · academic year</span></div>
+        <a class="btn primary" href="tel:+233203652247">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call: 020 365 2247</a>
+        <a class="btn dark" href="https://www.google.com/maps/search/?api=1&query=Wagyingo%20Main%20Hostel&query_place_id=ChIJhczeVWKU2w8RROfesHT1aEc" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          View on Google Maps</a>
+        <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=6.674776,-1.5616726" target="_blank" rel="noopener">Get directions</a>
+        <a class="btn" href="https://www.wagyingohostel.com/" target="_blank" rel="noopener">Visit website</a>
+        <div class="meta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg>
+          GPS-verified · data from Google Maps
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="lb" id="lb">
+  <button class="close" onclick="lbClose()" aria-label="Close">✕</button>
+  <button class="prev" onclick="lbStep(-1)" aria-label="Previous">‹</button>
+  <img id="lbimg" referrerpolicy="no-referrer" alt="Hostel photo" />
+  <button class="next" onclick="lbStep(1)" aria-label="Next">›</button>
+  <div class="cap" id="lbcap"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const IMGS=[
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAEMJverJd3m8h6dneNBFyArhi2Vr6UXHXuXNOzw2S_x2iCU9pULr-NWYEa9jv_HuHS4AWzu4-sAW997PN9YzLR3CsQmxGhtI53sftqJ18rcZ5Ilf2Z7kKbiJnTbd28uoOfILKoPAewhlwI=w1920-h1080-k-no",
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAHO70kxSFEPp7nR6yseCAh-0hgH7UwVNti1YtB9nUkhDgg0CifMZTxnO-S6seIEr3GIWe7nB2jv0sK5SE8jPwCg0G50J7D-uulc-_0xOhMo4Rwf2uA7inS1tCClKG4xeZc0P6ZRAw=w1920-h1080-k-no",
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAF2dbrSZ-lGQFJatTKou6QFGSQSk_P67Dr4R-zJrULjTulv7n1SkuRZMzMBIf49CpD59Gl39NN5Yqr2HiikSXASWkyJi55PlkASNcc90pfuonoWii219PvG0LoN1JraYFRvPl2ZrA=w1920-h1080-k-no",
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAEZ06wYwdmeaP_e5lJJZP0yaPb7Q2yedaK1PoiCf04qgdAHsDYkGVi1dj1rd2mjJATKCTbhWRZD4AL0ukIvuM1n72Tx4rMcg-Bpp1PM-P0ixyPze5S2uyPbvWIff9K-02nWC54A=w1920-h1080-k-no",
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAGhk79enN6oOtwbMUis3okb6fGb5GAuRLt6kPv9CCs3GPjA0RID9H8DkfqTiLDuU9klxdNEK8utRqPgKqWiG-213LtfdbgFoF9nR2Yk47KW3_oPTyq9tJoyhJ_Cqx07ORjP27Ks=w1920-h1080-k-no",
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAELiTiX_hQIwJf95LN18ARjNkclH-3r3YWvONrdkPL-K4oZEqOYDTn6KlKIjs5vdIOJiLJvwZTjoiOxJukNzXy4sr0oD54MqmBHvMJRj7ScJnIaJjVVMyg6RpgUEmUYuouJQ99u3g=w1920-h1080-k-no",
+ "https://lh3.googleusercontent.com/gps-cs-s/APNQkAGJHhYvFqJshzdp4VukFObs5V-_pKqNqBTOLZuQlNnL7m7yGNu9yeiypagQf2KWFMNVatwg9bpjujVmnPsxpir611xqbi8muMHXUizGYjjkqqDaoM3Lt0ZF4DslYDAQwktibkNeCw=w1920-h1080-k-no"
+];
+const thumb=u=>u.replace('=w1920-h1080-k-no','=w900-h650-k-no');
+const g=document.getElementById('gallery');
+IMGS.slice(0,5).forEach((u,i)=>{
+  const d=document.createElement('div');d.className='g';d.onclick=()=>lbOpen(i);
+  d.innerHTML=`<img src="${thumb(u)}" referrerpolicy="no-referrer" alt="Wagyingo Main Hostel photo ${i+1}">`+
+    (i===4&&IMGS.length>5?`<div class="more"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>+${IMGS.length-5} photos</div>`:'');
+  g.appendChild(d);
+});
+
+const AMEN=[
+ ['Free Wi-Fi','M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01'],
+ ['Study rooms','M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'],
+ ['24/7 security','M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'],
+ ['Gaming area','M6 12h4m-2-2v4M15 13h.01M18 11h.01M17.32 5H6.68a4 4 0 0 0-3.98 3.59L2 14a3 3 0 0 0 3 3 4 4 0 0 0 3.2-1.6l.8-1.07A2 2 0 0 1 10.8 13h2.4a2 2 0 0 1 1.6.8l.8 1.2A4 4 0 0 0 19 17a3 3 0 0 0 3-3l-.7-5.41A4 4 0 0 0 17.32 5z'],
+ ['Multiple floors / lift','M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 13v.01M9 17v.01'],
+ ['Fridge in rooms','M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM4 10h16M9 6h.01M9 14h.01'],
+];
+document.getElementById('amen').innerHTML=AMEN.map(a=>
+ `<div class="a"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${a[1]}"/></svg>${a[0]}</div>`).join('');
+
+const ROOMS=[['Single','9,500'],['Double','11,500'],['Triple','12,000'],['Quad','13,000'],['Study room','19,000']];
+document.getElementById('rooms').innerHTML=ROOMS.map(r=>`<tr><td>${r[0]}</td><td>GHS ${r[1]}</td></tr>`).join('');
+
+const DIST=[['5',259],['4',156],['3',54],['2',12],['1',22]];const tot=503;
+document.getElementById('dist').innerHTML=DIST.map(d=>
+ `<div class="dbar"><span style="width:10px">${d[0]}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg><div class="track"><div class="fill" style="width:${Math.round(d[1]/tot*100)}%"></div></div><span>${d[1]}</span></div>`).join('');
+
+const TAGS=[['Spacious rooms',5],['Security',11],['Value for money',2],['Peace and quiet',3],['Fridge',2],['Home away from home',2],['Luxurious',2],['Student living',5],['Edifice',7]];
+document.getElementById('tags').innerHTML=TAGS.map(t=>`<span class="chip">${t[0]} <b>${t[1]}</b></span>`).join('');
+
+const map=L.map('map',{scrollWheelZoom:false}).setView([6.674776,-1.5616726],15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+L.marker([6.674776,-1.5616726]).addTo(map).bindPopup('<b>Wagyingo Main Hostel</b>').openPopup();
+L.circleMarker([6.6745,-1.5716],{radius:7,color:'#fff',weight:2,fillColor:'#1E40AF',fillOpacity:1}).addTo(map).bindPopup('KNUST Campus');
+
+let idx=0;
+function lbOpen(i){idx=i;document.getElementById('lbimg').src=IMGS[i];document.getElementById('lbcap').textContent=`Photo ${i+1} of ${IMGS.length}`;document.getElementById('lb').classList.add('open');}
+function lbClose(){document.getElementById('lb').classList.remove('open');}
+function lbStep(d){idx=(idx+d+IMGS.length)%IMGS.length;lbOpen(idx);}
+document.getElementById('lb').addEventListener('click',e=>{if(e.target.id==='lb')lbClose();});
+document.addEventListener('keydown',e=>{if(!document.getElementById('lb').classList.contains('open'))return;if(e.key==='Escape')lbClose();if(e.key==='ArrowRight')lbStep(1);if(e.key==='ArrowLeft')lbStep(-1);});
+setTimeout(()=>map.invalidateSize(),200);
+</script>
+</body>
+</html>
