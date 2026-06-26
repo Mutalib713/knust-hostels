@@ -6,353 +6,382 @@
 <title>KNUST Hostels Directory — 501 hostels on & around campus</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --primary:#1E40AF; --primary-2:#3B82F6; --cta:#F59E0B; --cta-press:#D97706;
-    --bg:#F1F5F9; --card:#FFFFFF; --text:#0F172A; --muted:#475569; --faint:#64748B;
-    --border:#E2E8F0; --heading:#1E3A8A; --ok:#059669; --warn:#B45309; --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.06);
-    --radius:14px;
+    --primary:#1E40AF;--primary-2:#3B82F6;--cta:#F59E0B;--cta-press:#D97706;
+    --bg:#F1F5F9;--card:#FFFFFF;--text:#0F172A;--muted:#475569;--faint:#64748B;
+    --border:#E2E8F0;--heading:#1E3A8A;--ok:#059669;--warn:#B45309;--danger:#B91C1C;
+    --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.06);--radius:14px;
   }
-  [data-theme="dark"]{
-    --bg:#0B1220; --card:#111A2E; --text:#E5EDF7; --muted:#9FB0C6; --faint:#7E90A8;
-    --border:#1E293B; --heading:#BFDBFE; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
-  }
+  [data-theme="dark"]{--bg:#0B1220;--card:#111A2E;--text:#E5EDF7;--muted:#9FB0C6;--faint:#7E90A8;--border:#1E293B;--heading:#BFDBFE;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:"Fira Sans",system-ui,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-  .mono{font-family:"Fira Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Fira Sans",system-ui,Arial,sans-serif;line-height:1.55}
+  .mono{font-family:"Fira Code",monospace;font-variant-numeric:tabular-nums}
   a{color:var(--primary-2);text-decoration:none}
   .wrap{max-width:1280px;margin:0 auto;padding:0 18px}
 
-  /* Header */
+  /* disclaimer */
+  .disc{background:#FEF3C7;color:#7c2d12;border-bottom:1px solid #FCD34D;font-size:13px}
+  [data-theme="dark"] .disc{background:#3a2a06;color:#fde68a;border-color:#854d0e}
+  .disc .wrap{display:flex;gap:12px;align-items:flex-start;padding:10px 18px}
+  .disc svg{flex:none;margin-top:1px}
+  .disc b{color:#9a3412}
+  [data-theme="dark"] .disc b{color:#fcd34d}
+  .disc button{margin-left:auto;flex:none;background:none;border:none;color:inherit;cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
+
   header.top{background:linear-gradient(135deg,#1E3A8A 0%,#1E40AF 55%,#2563EB 100%);color:#fff;position:relative;overflow:hidden}
   header.top::after{content:"";position:absolute;inset:0;background:radial-gradient(900px 380px at 85% -10%,rgba(245,158,11,.22),transparent 60%);pointer-events:none}
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
-  .brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.2px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700}
   .brand .logo{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.14);display:grid;place-items:center;border:1px solid rgba(255,255,255,.25)}
-  .brand small{display:block;font-weight:400;font-size:12px;opacity:.85;letter-spacing:.3px}
-  .iconbtn{cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:10px;height:40px;padding:0 13px;display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:14px;transition:background .2s}
+  .brand small{display:block;font-weight:400;font-size:12px;opacity:.85}
+  .iconbtn{cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:10px;height:38px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px}
   .iconbtn:hover{background:rgba(255,255,255,.22)}
-  .iconbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
-  .hero{padding:14px 0 30px}
-  .hero h1{margin:.1em 0 .15em;font-size:clamp(26px,4vw,42px);line-height:1.08;font-weight:700}
-  .hero p.sub{margin:0 0 20px;max-width:60ch;color:#dbeafe;font-size:clamp(15px,1.6vw,17px)}
-  .searchwrap{display:flex;gap:10px;flex-wrap:wrap;max-width:760px}
-  .searchbox{position:relative;flex:1 1 360px}
-  .searchbox svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.7}
-  #q{width:100%;height:54px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.97);color:#0f172a;padding:0 16px 0 44px;font-size:16px;font-family:inherit;box-shadow:var(--shadow)}
-  #q:focus{outline:3px solid var(--cta);outline-offset:1px}
+  .hero{padding:10px 0 30px}
+  .hero h1{margin:.1em 0 .15em;font-size:clamp(25px,4vw,40px);line-height:1.08}
+  .hero p.sub{margin:0 0 18px;max-width:62ch;color:#dbeafe;font-size:clamp(14px,1.6vw,16px)}
+  .searchwrap{position:relative;max-width:640px}
+  .searchbox{position:relative}
+  .searchbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.6}
+  #q{width:100%;height:52px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:#fff;color:#0f172a;padding:0 16px 0 44px;font-size:16px;font-family:inherit;box-shadow:var(--shadow)}
+  #q:focus{outline:3px solid var(--cta)}
+  .sugg{position:absolute;left:0;right:0;top:56px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);z-index:40;overflow:hidden;display:none}
+  .sugg.open{display:block}
+  .sugg div{padding:10px 14px;cursor:pointer;font-size:14px;color:var(--text);display:flex;justify-content:space-between;gap:10px}
+  .sugg div:hover,.sugg div.active{background:var(--bg)}
+  .sugg .s-area{color:var(--faint);font-size:12.5px}
 
-  /* KPIs */
   .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:-26px 0 8px;position:relative;z-index:5}
-  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
-  .kpi .n{font-size:26px;font-weight:700;color:var(--heading);line-height:1}
-  .kpi .l{font-size:12.5px;color:var(--muted);margin-top:6px}
-  .kpi .n .mono{font-weight:700}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow)}
+  .kpi .n{font-size:24px;font-weight:700;color:var(--heading);line-height:1}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:5px}
 
-  /* Controls */
   .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:16px;margin:18px 0}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:15px;margin:16px 0 12px}
   .field{display:flex;flex-direction:column;gap:5px}
-  .field label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.2px}
-  select,input[type="search"]{height:42px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 12px;font-family:inherit;font-size:14px;cursor:pointer}
-  select:focus,input:focus{outline:2px solid var(--primary-2);outline-offset:1px}
-  .chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);cursor:pointer;height:42px}
-  .chk input{width:18px;height:18px;cursor:pointer;accent-color:var(--primary)}
+  .field label{font-size:12px;color:var(--muted);font-weight:600}
+  select{height:40px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:0 11px;font-family:inherit;font-size:14px;cursor:pointer}
+  .chk{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--text);cursor:pointer;height:40px}
+  .chk input{width:17px;height:17px;cursor:pointer;accent-color:var(--primary)}
   .spacer{flex:1 1 auto}
-  .count{font-size:14px;color:var(--muted)}
-  .count b{color:var(--heading);font-size:16px}
+  .count{font-size:14px;color:var(--muted)}.count b{color:var(--heading)}
+  .amenbar{display:flex;flex-wrap:wrap;gap:7px;padding:0 15px 15px}
+  .atog{cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:999px;padding:5px 12px;font-size:12.5px;font-family:inherit}
+  .atog.on{background:var(--primary);border-color:var(--primary);color:#fff}
 
-  /* Map */
-  #map{height:420px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:8px;z-index:1}
-  .maphint{font-size:12.5px;color:var(--faint);margin:0 2px 18px}
+  .areas{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 14px}
+  .areachip{cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--text)}
+  .areachip:hover{border-color:var(--primary-2)}
+  .areachip .dot{width:9px;height:9px;border-radius:50%}
+  .areachip b{color:var(--heading)}
 
-  /* Cards */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;margin-bottom:20px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;transition:border-color .2s,box-shadow .2s,transform .2s}
-  .card:hover{border-color:var(--primary-2);box-shadow:0 6px 22px rgba(30,64,175,.13);transform:translateY(-2px)}
-  .card h3{margin:0;font-size:16.5px;font-weight:600;color:var(--heading);line-height:1.25}
-  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
-  .badge.cat{background:rgba(59,130,246,.1);color:var(--primary);border-color:rgba(59,130,246,.2)}
-  .badge.dist{background:rgba(245,158,11,.12);color:var(--warn);border-color:rgba(245,158,11,.25)}
-  .badge.approx{background:rgba(180,83,9,.1);color:var(--warn);border-color:rgba(180,83,9,.3)}
-  .badge.closed{background:rgba(220,38,38,.1);color:#b91c1c;border-color:rgba(220,38,38,.3)}
-  .area-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  #map{height:380px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:8px;z-index:1}
+  .maphint{font-size:12.5px;color:var(--faint);margin:0 2px 16px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .2s}
+  .card:hover{border-color:var(--primary-2);box-shadow:0 8px 24px rgba(30,64,175,.14);transform:translateY(-2px)}
+  .card .ph{height:160px;background:#e2e8f0 center/cover no-repeat;position:relative}
+  .card .ph.none{display:flex;align-items:center;justify-content:center;color:#94a3b8}
+  .card .tick{position:absolute;top:10px;left:10px;background:var(--ok);color:#fff;border-radius:999px;font-size:11.5px;font-weight:600;padding:3px 9px 3px 7px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .card .distb{position:absolute;top:10px;right:10px;background:rgba(15,23,42,.78);color:#fff;border-radius:999px;font-size:11.5px;font-weight:600;padding:3px 9px}
+  .card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .card h3{margin:0;font-size:16px;font-weight:600;color:var(--heading);line-height:1.25}
+  .row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px}
+  .badge.area{background:rgba(30,64,175,.1);color:var(--primary)}
+  .badge.cat{background:rgba(59,130,246,.1);color:var(--primary-2)}
   .stars{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:13.5px;color:var(--text)}
   .stars .rev{color:var(--faint);font-weight:400;font-size:12.5px}
-  .addr{font-size:13px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
-  .addr svg{flex:none;margin-top:2px;opacity:.7}
-  .actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
-  .btn{cursor:pointer;border-radius:10px;height:38px;padding:0 13px;display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;font-family:inherit;border:1px solid var(--border);background:var(--bg);color:var(--text);transition:all .18s;text-decoration:none}
+  .amini{display:flex;flex-wrap:wrap;gap:5px}
+  .amini span{font-size:11px;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
+  .cardact{display:flex;gap:8px;margin-top:auto;padding-top:4px}
+  .btn{cursor:pointer;border-radius:10px;height:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;font-family:inherit;border:1px solid var(--border);background:var(--bg);color:var(--text);text-decoration:none;flex:1}
   .btn:hover{border-color:var(--primary-2);color:var(--primary)}
-  .btn.primary{background:var(--cta);border-color:var(--cta);color:#3a2606}
-  .btn.primary:hover{background:var(--cta-press);border-color:var(--cta-press);color:#2a1a02}
-  .btn:focus-visible{outline:3px solid var(--primary-2);outline-offset:2px}
-  .btn.ghost{padding:0 11px}
-  .more{display:block;margin:6px auto 36px;cursor:pointer;background:var(--primary);color:#fff;border:none;border-radius:12px;height:48px;padding:0 26px;font-size:15px;font-weight:600;font-family:inherit;box-shadow:var(--shadow)}
-  .more:hover{background:#1b399c}
-  .empty{text-align:center;padding:50px 20px;color:var(--muted)}
+  .btn.call{background:var(--ok);border-color:var(--ok);color:#fff}.btn.call:hover{background:#047a52;color:#fff}
+  .btn.call.unv{background:var(--bg);border-color:var(--border);color:var(--text)}
+  .more{display:block;margin:6px auto 30px;cursor:pointer;background:var(--primary);color:#fff;border:none;border-radius:12px;height:46px;padding:0 26px;font-size:15px;font-weight:600;font-family:inherit}
+  .empty{text-align:center;padding:50px;color:var(--muted)}
 
-  footer{border-top:1px solid var(--border);background:var(--card);padding:26px 0;margin-top:10px;color:var(--muted);font-size:13.5px}
-  footer h4{color:var(--heading);margin:0 0 8px;font-size:14px}
-  footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px}
-  .pill{display:inline-block;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:2px 8px;margin:2px 3px 2px 0;font-size:12px}
+  /* booking section */
+  .book{margin:8px 0 26px;padding:20px 22px}
+  .book h2{margin:0 0 6px;color:var(--heading);font-size:19px}
+  .book p.l{margin:0 0 16px;color:var(--muted);font-size:14px}
+  .bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .bstep{border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--bg)}
+  .bstep .ic{width:34px;height:34px;border-radius:9px;background:rgba(30,64,175,.1);color:var(--primary);display:grid;place-items:center;margin-bottom:9px}
+  .bstep h4{margin:0 0 5px;font-size:14.5px;color:var(--heading)}
+  .bstep p{margin:0;font-size:13px;color:var(--muted)}
+  .bstep a{font-size:13px;font-weight:600}
 
-  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}footer .cols{grid-template-columns:1fr}}
-  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr);margin-top:-18px}#map{height:320px}.hero h1{font-size:26px}}
-  @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto}}
-  .leaflet-popup-content{font-family:"Fira Sans",sans-serif;margin:11px 13px}
-  .leaflet-popup-content b{color:#1E3A8A}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(8,12,22,.6);z-index:100;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 14px}
+  .modal.open{display:flex}
+  .sheet{background:var(--card);border-radius:18px;max-width:860px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden}
+  .gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-auto-rows:115px;gap:5px;background:#0b1220}
+  .gal .g0{grid-row:1/3}
+  .gal img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer}
+  .gal .noimg{grid-column:1/4;grid-row:1/3;height:230px;display:flex;align-items:center;justify-content:center;color:#64748b;background:var(--bg)}
+  .sheet .pad{padding:20px 22px}
+  .sheet h2{margin:0 0 8px;color:var(--heading);font-size:24px}
+  .closex{position:absolute;top:16px;right:18px;z-index:110;background:rgba(255,255,255,.9);border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:20px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+  .sec{margin-top:18px}.sec h3{margin:0 0 9px;color:var(--heading);font-size:15px}
+  .amgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .amgrid .a{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text)}
+  .amgrid .a svg{color:var(--primary);flex:none}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:12.5px;color:#334155}
+  .mact{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+  .mact .btn{flex:none;height:42px;padding:0 16px}
+  .btn.primary{background:var(--cta);border-color:var(--cta);color:#3a2606}.btn.primary:hover{background:var(--cta-press);color:#2a1a02}
+  .btn.dark{background:var(--primary);border-color:var(--primary);color:#fff}.btn.dark:hover{background:#1b399c;color:#fff}
+  .mdisc{margin-top:16px;font-size:12px;color:var(--warn);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 12px}
+
+  footer{border-top:1px solid var(--border);background:var(--card);padding:24px 0;margin-top:10px;color:var(--muted);font-size:13px}
+  footer b{color:var(--heading)}
+  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr);margin-top:-18px}#map{height:300px}.gal{grid-template-columns:1fr 1fr}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <span class="logo" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
-        </span>
-        <div>KNUST Hostels Directory<small id="brandsub">Around-campus student accommodation</small></div>
-      </div>
-      <div class="row">
-        <button class="iconbtn" id="csvBtn" type="button" aria-label="Download data as CSV">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          <span class="hide-sm">CSV</span>
-        </button>
-        <button class="iconbtn" id="themeBtn" type="button" aria-label="Toggle dark mode">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="hero">
-      <h1>Find a hostel around KNUST</h1>
-      <p class="sub">A searchable, mapped directory of <b id="heroCount">501</b> hostels, halls & guest houses — <b>on campus</b>, in <b>Gaza</b>, and across Kotei, Ayeduase, Bomso, Boadi, Kentinkrono, Ayigya, Deduako & other student areas around KNUST. Each grouped by its real suburb and pinned to its exact Google Maps location. Data refreshed <span class="mono" id="heroDate">2026-06-26</span>.</p>
-      <div class="searchwrap">
-        <div class="searchbox">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="q" type="search" placeholder="Search by hostel name, area or address…" autocomplete="off" aria-label="Search hostels" />
-        </div>
-      </div>
+<div class="disc" id="disc"><div class="wrap">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+  <div><b>Independent student project</b> — not affiliated with, endorsed, or approved by KNUST. Prices &amp; manager contacts were scraped or found online and <b>may be wrong or outdated</b>. Always verify by calling, and visit the hostel yourself before paying.</div>
+  <button onclick="document.getElementById('disc').style.display='none'" aria-label="Dismiss">✕</button>
+</div></div>
+
+<header class="top"><div class="wrap">
+  <div class="topbar">
+    <div class="brand"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span>
+      <div>KNUST Hostels Directory<small>Find a hostel near your college</small></div></div>
+    <div class="row">
+      <button class="iconbtn" id="csvBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>
+      <button class="iconbtn" id="themeBtn" aria-label="Dark mode"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
   </div>
-</header>
+  <div class="hero">
+    <h1>Find a hostel around KNUST</h1>
+    <p class="sub"><b id="heroCount">501</b> hostels, halls & guest houses — on campus and across Kotei, Ayeduase, Bomso, Boadi & other student areas. Photos, amenities, confirmed manager contacts, and exact Google Maps locations.</p>
+    <div class="searchwrap">
+      <div class="searchbox"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="text" placeholder="Search hostel name or area…" autocomplete="off" aria-label="Search hostels"></div>
+      <div class="sugg" id="sugg"></div>
+    </div>
+  </div>
+</div></header>
 
 <main class="wrap">
-  <section class="kpis" id="kpis" aria-label="Key statistics"></section>
+  <section class="kpis" id="kpis"></section>
 
-  <section class="controls panel" aria-label="Filters">
-    <div class="field">
-      <label for="area">Area</label>
-      <select id="area"><option value="">All areas</option></select>
-    </div>
-    <div class="field">
-      <label for="cat">Type</label>
-      <select id="cat"><option value="">All types</option></select>
-    </div>
-    <div class="field">
-      <label for="minr">Min rating</label>
-      <select id="minr">
-        <option value="0">Any</option><option value="3">3.0+</option>
-        <option value="3.5">3.5+</option><option value="4">4.0+</option><option value="4.5">4.5+</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="sort">Sort by</label>
-      <select id="sort">
-        <option value="dist">Distance to campus</option>
-        <option value="rating">Rating (high→low)</option>
-        <option value="reviews">Most reviewed</option>
-        <option value="name">Name (A→Z)</option>
-      </select>
-    </div>
-    <label class="chk" for="gpsonly"><input type="checkbox" id="gpsonly" />GPS-verified only</label>
+  <section class="controls panel">
+    <div class="field"><label for="college">Your college</label>
+      <select id="college"><option value="">All colleges</option></select></div>
+    <div class="field"><label for="area">Area</label>
+      <select id="area"><option value="">All areas</option></select></div>
+    <div class="field"><label for="cat">Type</label>
+      <select id="cat"><option value="">All types</option></select></div>
+    <div class="field"><label for="sort">Sort by</label>
+      <select id="sort"><option value="dist">Distance to campus</option><option value="rating">Rating</option><option value="reviews">Most reviewed</option><option value="confirmed">Confirmed contact first</option><option value="name">Name A–Z</option></select></div>
+    <label class="chk"><input type="checkbox" id="confonly">Confirmed contact only</label>
+    <label class="chk"><input type="checkbox" id="photoonly">Has photo</label>
     <div class="spacer"></div>
-    <div class="count" aria-live="polite">Showing <b id="shown">0</b> of <span id="tot">0</span></div>
+    <div class="count">Showing <b id="shown">0</b> of <span id="tot">0</span></div>
+    <div class="amenbar" id="amenbar" style="width:100%"></div>
   </section>
 
-  <div id="map" role="region" aria-label="Map of hostels"></div>
-  <p class="maphint">Tip: pins are colour-coded by area. Click a pin for the hostel name, rating and a direct Google Maps link. The map reflects your current filters.</p>
+  <div style="font-size:12.5px;color:var(--faint);margin:0 2px 6px">Areas covered (click to filter):</div>
+  <div class="areas" id="areas"></div>
+
+  <div id="map"></div>
+  <p class="maphint">Pins are colour-coded by area. Click a pin for the hostel and a Google Maps link.</p>
 
   <section class="grid" id="grid"></section>
-  <button class="more" id="moreBtn" type="button" hidden>Load more hostels</button>
-  <div class="empty" id="empty" hidden>No hostels match your filters. Try clearing the search or widening the area.</div>
+  <button class="more" id="moreBtn" hidden>Load more</button>
+  <div class="empty" id="empty" hidden>No hostels match your filters.</div>
+
+  <section class="panel book">
+    <h2>How freshers can book a hostel</h2>
+    <p class="l">First-years (Level 100) are usually placed in traditional halls; most students use private hostels. Here's how to secure a room:</p>
+    <div class="bgrid">
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
+        <h4>1. Official KNUST portals</h4><p>Apply for on-campus halls / approved hostels via the university systems.</p>
+        <a href="https://kosass.knust.edu.gh/hostels" target="_blank" rel="noopener">KOSASS ↗</a> &nbsp; <a href="https://kohs.knust.edu.gh/" target="_blank" rel="noopener">KOHS ↗</a></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <h4>2. Call the manager</h4><p>Use the <b>Call</b> button on a hostel to ask about availability, price & viewing. Green tick = contact confirmed.</p></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <h4>3. Visit before paying</h4><p>Open <b>Directions</b>, go and inspect the room. Never pay before seeing it in person.</p></div>
+      <div class="bstep"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h4>4. Booking platforms</h4><p>Some hostels list rooms online with photos & prices.</p>
+        <a href="https://getrooms.co/hostels-around-knust/" target="_blank" rel="noopener">GetRooms ↗</a> &nbsp; <a href="https://hostelgig.com" target="_blank" rel="noopener">HostelGig ↗</a></div>
+    </div>
+  </section>
 </main>
 
-<footer>
-  <div class="wrap cols">
-    <div>
-      <h4>About this directory</h4>
-      <p>Compiled from live Google Maps data (Apify), bounded to the KNUST catchment and cross-checked against KNUST hostel directories. Each hostel is grouped by its <b>real suburb</b> — reverse-geocoded from its exact coordinates (OpenStreetMap) — and links to its precise Google Maps place. Limited to on-campus and within ~6 km; straight-line distances from campus centre.</p>
-    </div>
-    <div>
-      <h4>Data quality</h4>
-      <p><span class="pill" id="fGps">— GPS-verified</span><span class="pill" id="fPhone">— with phone</span><span class="pill" id="fRating">— with rating</span><span class="pill" id="fApprox">— approx. location</span></p>
-      <p style="margin-top:8px">"Approx. location" means Google returned an area-level pin — use the Maps link to confirm the exact spot.</p>
-    </div>
-    <div>
-      <h4>Areas covered</h4>
-      <p id="fAreas"></p>
-    </div>
-  </div>
-  <div class="wrap" style="margin-top:16px;font-size:12px;opacity:.8">Generated 2026-06-26 · For reference only; verify current room availability and prices directly with each hostel.</div>
-</footer>
+<footer><div class="wrap">
+  <p><b>KNUST Hostels Directory</b> · 501 hostels · data generated 2026-06-26 from Google Maps + OpenStreetMap. Independent student project, not affiliated with KNUST. Verify prices &amp; contacts before paying.</p>
+</div></footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="data.js"></script>
 <script>
 (function(){
-  const H = window.HOSTELS||[], M = window.META||{};
-  const PAGE = 60; let shown = PAGE;
-  const AREA_COLORS = ["#1E40AF","#F59E0B","#059669","#DB2777","#7C3AED","#0891B2","#CA8A04","#DC2626","#2563EB","#15803D","#9333EA","#EA580C","#0D9488","#BE123C"];
-  const areaColor = {}; (M.areas||[]).forEach((a,i)=>areaColor[a]=AREA_COLORS[i%AREA_COLORS.length]);
+  const H=window.HOSTELS||[], M=window.META||{}, PAGE=48; let shown=PAGE, activeAmen=new Set();
+  const COLORS=["#1E40AF","#F59E0B","#059669","#DB2777","#7C3AED","#0891B2","#CA8A04","#DC2626","#2563EB","#15803D","#9333EA","#EA580C","#0D9488","#BE123C","#4338CA","#0E7490"];
+  const aColor={}; (M.areas||[]).forEach((a,i)=>aColor[a]=COLORS[i%COLORS.length]);
+  const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const tel=p=>(p||'').replace(/[^+\d]/g,'');
+  const thumb=u=>u?u.replace('=w1920-h1080-k-no','=w600-h400-k-no').replace('=w4032-h3024-k-no','=w600-h400-k-no'):u;
+  const mapsUrl=r=>r.maps_url||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(r.name+' Kumasi'));
+  const dirUrl=r=>`https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}`;
+  const star='<svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>';
+  const tickSvg='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
-  // ---- KPIs ----
-  const avg = (H.reduce((s,r)=>s+(r.rating||0),0)/(H.filter(r=>r.rating).length||1)).toFixed(2);
-  const kpis = [
-    ["Total hostels", M.total],
-    ["On campus", M.on_campus],
-    ["Areas covered", (M.areas||[]).length],
-    ["GPS-verified", M.gps_verified],
-    ["With phone", M.with_phone],
-    ["Avg rating", avg]
-  ];
-  document.getElementById('kpis').innerHTML = kpis.map(k=>
-    `<div class="kpi"><div class="n mono">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
-  document.getElementById('heroCount').textContent = M.total;
-  document.getElementById('heroDate').textContent = M.generated||'';
-  document.getElementById('tot').textContent = M.total;
-  document.getElementById('fGps').textContent = M.gps_verified+" GPS-verified";
-  document.getElementById('fPhone').textContent = M.with_phone+" with phone";
-  document.getElementById('fRating').textContent = M.with_rating+" with rating";
-  document.getElementById('fApprox').textContent = (M.total-M.gps_verified)+" approx. location";
-  document.getElementById('fAreas').innerHTML = (M.areas||[]).map(a=>
-    `<span class="pill"><span class="area-dot" style="background:${areaColor[a]}"></span> ${a} (${M.area_counts[a]})</span>`).join(' ');
+  // KPIs
+  document.getElementById('kpis').innerHTML=[
+    ['Total hostels',M.total],['Confirmed contacts',M.confirmed],['With photos',M.with_images],
+    ['Areas',(M.areas||[]).length],['Colleges',(M.colleges||[]).length],['On campus',M.area_counts['On Campus (KNUST)']||0]
+  ].map(k=>`<div class="kpi"><div class="n mono">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
+  document.getElementById('heroCount').textContent=M.total;
+  document.getElementById('tot').textContent=M.total;
 
-  // ---- populate selects ----
-  const areaSel=document.getElementById('area'), catSel=document.getElementById('cat');
+  const colSel=document.getElementById('college'),areaSel=document.getElementById('area'),catSel=document.getElementById('cat');
+  (M.colleges||[]).forEach(c=>colSel.add(new Option(c,c)));
   (M.areas||[]).forEach(a=>areaSel.add(new Option(`${a} (${M.area_counts[a]})`,a)));
-  (M.categories||[]).forEach(c=>catSel.add(new Option(c,c)));
+  [...new Set(H.map(r=>r.category))].sort().forEach(c=>catSel.add(new Option(c,c)));
+  document.getElementById('amenbar').innerHTML=(M.amenities||[]).map(a=>`<button class="atog" data-a="${esc(a)}">${esc(a)}</button>`).join('');
+  document.getElementById('areas').innerHTML=(M.areas||[]).map(a=>`<span class="areachip" data-area="${esc(a)}"><span class="dot" style="background:${aColor[a]}"></span>${esc(a)} <b>${M.area_counts[a]}</b></span>`).join('');
 
-  // ---- map ----
-  const map = L.map('map',{scrollWheelZoom:false}).setView([M.knust.lat,M.knust.lng],14);
+  // map
+  const map=L.map('map',{scrollWheelZoom:false}).setView([M.knust.lat,M.knust.lng],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
   L.marker([M.knust.lat,M.knust.lng]).addTo(map).bindPopup('<b>KNUST Campus</b>');
-  let markerLayer = L.layerGroup().addTo(map);
+  let markers=L.layerGroup().addTo(map);
 
-  const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const tel = p => p? p.replace(/[^+\d]/g,''):'';
-  const site = w => !w?'':(/^https?:\/\//.test(w)?w:'https://'+w);
-  const dirUrl = r => `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}`;
-  const mapsUrl = r => r.maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name+' Kumasi')}`;
-
-  function starSvg(){return '<svg width="15" height="15" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';}
-  function pin(){return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';}
-
-  // ---- state / filtering ----
-  let filtered = [];
-  function applyFilters(){
+  let filtered=[];
+  function apply(){
     const q=document.getElementById('q').value.trim().toLowerCase();
-    const a=areaSel.value, c=catSel.value, mr=parseFloat(document.getElementById('minr').value)||0;
-    const gps=document.getElementById('gpsonly').checked;
-    const sort=document.getElementById('sort').value;
-    filtered = H.filter(r=>{
-      if(a && r.area!==a) return false;
-      if(c && r.category!==c) return false;
-      if(mr && !(r.rating>=mr)) return false;
-      if(gps && !r.coord_reliable) return false;
-      if(q){ const hay=(r.name+' '+r.area+' '+r.address+' '+r.category).toLowerCase(); if(!hay.includes(q)) return false; }
+    const col=colSel.value,a=areaSel.value,c=catSel.value,sort=document.getElementById('sort').value;
+    const confonly=document.getElementById('confonly').checked,photoonly=document.getElementById('photoonly').checked;
+    filtered=H.filter(r=>{
+      if(a&&r.area!==a)return false;
+      if(c&&r.category!==c)return false;
+      if(col&&!(r.colleges||[]).includes(col))return false;
+      if(confonly&&!r.confirmed)return false;
+      if(photoonly&&!(r.images&&r.images.length))return false;
+      if(activeAmen.size){for(const am of activeAmen)if(!(r.amenities||[]).includes(am))return false;}
+      if(q){if(!((r.name+' '+r.area+' '+r.category).toLowerCase().includes(q)))return false;}
       return true;
     });
     filtered.sort((x,y)=>{
-      if(sort==='rating') return (y.rating||0)-(x.rating||0)||(y.reviews||0)-(x.reviews||0);
-      if(sort==='reviews') return (y.reviews||0)-(x.reviews||0);
-      if(sort==='name') return x.name.localeCompare(y.name);
-      return (x.km_from_knust||999)-(y.km_from_knust||999);
+      if(sort==='rating')return (y.rating||0)-(x.rating||0);
+      if(sort==='reviews')return (y.reviews||0)-(x.reviews||0);
+      if(sort==='name')return x.name.localeCompare(y.name);
+      if(sort==='confirmed')return (y.confirmed?1:0)-(x.confirmed?1:0)||(x.km_from_knust||9)-(y.km_from_knust||9);
+      return (x.km_from_knust||9)-(y.km_from_knust||9);
     });
-    shown=PAGE; render(); drawMarkers();
+    shown=PAGE;render();drawMarkers();
   }
 
-  function cardHtml(r){
-    const rating = r.rating? `<span class="stars">${starSvg()} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`
-                           : `<span class="stars" style="color:var(--faint)">No rating yet</span>`;
-    return `<article class="card">
-      <div class="row" style="justify-content:space-between">
-        <span class="badge" style="background:${areaColor[r.area]}1a;color:${areaColor[r.area]};border-color:${areaColor[r.area]}40">
-          <span class="area-dot" style="background:${areaColor[r.area]}"></span>${esc(r.area)}</span>
-        ${r.km_from_knust!=null?`<span class="badge dist">${r.km_from_knust} km</span>`:''}
-      </div>
-      <h3>${esc(r.name)}</h3>
-      <div class="row">${rating}<span class="badge cat">${esc(r.category)}</span>
-        ${!r.coord_reliable?'<span class="badge approx">approx. location</span>':''}
-        ${r.closed?'<span class="badge closed">closed</span>':''}</div>
-      ${r.address?`<div class="addr">${pin()}<span>${esc(r.address)}</span></div>`:''}
-      <div class="actions">
-        <a class="btn primary" href="${mapsUrl(r)}" target="_blank" rel="noopener" aria-label="Open ${esc(r.name)} on Google Maps">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Google Maps</a>
-        <a class="btn ghost" href="${dirUrl(r)}" target="_blank" rel="noopener" aria-label="Directions to ${esc(r.name)}">Directions</a>
-        ${r.phone?`<a class="btn ghost" href="tel:${tel(r.phone)}" aria-label="Call ${esc(r.name)}">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>`:''}
-        ${r.website?`<a class="btn ghost" href="${site(r.website)}" target="_blank" rel="noopener" aria-label="Website of ${esc(r.name)}">Website</a>`:''}
-      </div>
-    </article>`;
+  function card(r){
+    const ph=r.images&&r.images.length?`<div class="ph" style="background-image:url('${thumb(r.images[0])}')">`:`<div class="ph none">`;
+    const tick=r.confirmed?`<span class="tick">${tickSvg} Confirmed</span>`:'';
+    const noimgIcon=r.images&&r.images.length?'':'<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>';
+    const rating=r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:`<span class="stars" style="color:var(--faint)">New</span>`;
+    const am=(r.amenities||[]).slice(0,3).map(a=>`<span>${esc(a)}</span>`).join('');
+    const callCls=r.confirmed?'btn call':'btn call unv';
+    return `<article class="card" data-id="${r._i}">
+      ${ph}${noimgIcon}${tick}${r.km_from_knust!=null?`<span class="distb">${r.km_from_knust} km</span>`:''}</div>
+      <div class="body">
+        <div class="row"><span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span></div>
+        <h3>${esc(r.name)}</h3>
+        <div class="row">${rating}</div>
+        ${am?`<div class="amini">${am}</div>`:''}
+        <div class="cardact" onclick="event.stopPropagation()">
+          ${r.phone?`<a class="${callCls}" href="tel:${tel(r.phone)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>`:''}
+          <a class="btn" href="${mapsUrl(r)}" target="_blank" rel="noopener" aria-label="Map">Map</a>
+        </div>
+      </div></article>`;
   }
-
   function render(){
-    const grid=document.getElementById('grid'), empty=document.getElementById('empty'), more=document.getElementById('moreBtn');
-    document.getElementById('shown').textContent = Math.min(shown,filtered.length);
-    document.getElementById('tot').textContent = filtered.length;
-    if(!filtered.length){grid.innerHTML='';empty.hidden=false;more.hidden=true;return;}
-    empty.hidden=true;
-    grid.innerHTML = filtered.slice(0,shown).map(cardHtml).join('');
-    more.hidden = shown>=filtered.length;
-    more.textContent = `Load more hostels (${filtered.length-shown} more)`;
+    const g=document.getElementById('grid'),e=document.getElementById('empty'),m=document.getElementById('moreBtn');
+    document.getElementById('shown').textContent=Math.min(shown,filtered.length);
+    document.getElementById('tot').textContent=filtered.length;
+    if(!filtered.length){g.innerHTML='';e.hidden=false;m.hidden=true;return;}
+    e.hidden=true;
+    g.innerHTML=filtered.slice(0,shown).map(card).join('');
+    m.hidden=shown>=filtered.length;m.textContent=`Load more (${filtered.length-shown})`;
   }
-
   function drawMarkers(){
-    markerLayer.clearLayers();
-    filtered.forEach(r=>{
-      if(r.lat==null) return;
-      L.circleMarker([r.lat,r.lng],{radius:6,color:'#fff',weight:1.5,fillColor:areaColor[r.area]||'#1E40AF',fillOpacity:.9})
-       .bindPopup(`<b>${esc(r.name)}</b><br>${esc(r.area)}${r.rating?` · ★ ${r.rating.toFixed(1)} (${r.reviews})`:''}<br>
-         <a href="${mapsUrl(r)}" target="_blank" rel="noopener">Open in Google Maps →</a>`)
-       .addTo(markerLayer);
-    });
+    markers.clearLayers();
+    filtered.forEach(r=>{if(r.lat==null)return;
+      L.circleMarker([r.lat,r.lng],{radius:6,color:'#fff',weight:1.4,fillColor:aColor[r.area]||'#1E40AF',fillOpacity:.9})
+       .bindPopup(`<b>${esc(r.name)}</b><br>${esc(r.area)}${r.rating?` · ★ ${r.rating.toFixed(1)}`:''}${r.confirmed?' · ✓ confirmed':''}<br><a href="${mapsUrl(r)}" target="_blank" rel="noopener">Google Maps →</a>`).addTo(markers);});
   }
 
-  // ---- CSV download (client-side, from embedded data) ----
-  document.getElementById('csvBtn').addEventListener('click',()=>{
-    const cols=['name','area','category','km_from_knust','rating','reviews','phone','website','address','lat','lng','maps_url','coord_reliable'];
-    const head=['Name','Area','Type','Distance_km','Rating','Reviews','Phone','Website','Address','Latitude','Longitude','Google_Maps_URL','Location_reliable'];
-    const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
-    const rows=[head.join(',')].concat(filtered.map(r=>cols.map(c=>q(r[c])).join(',')));
-    const blob=new Blob([rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='knust_hostels.csv';a.click();URL.revokeObjectURL(url);
-  });
+  // detail modal
+  const AICON={'Wi-Fi':'M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01','Parking':'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 17V7h4a3 3 0 0 1 0 6H9','Air-conditioned':'M22 12H2M12 2v20M5 5l4 4M19 5l-4 4M5 19l4-4M19 19l-4-4','Laundry service':'M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM8 6h.01M11 6h.01M12 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8z','Restaurant':'M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2M5 2v20M16 2a4 4 0 0 0-4 4v6h4M16 2v20'};
+  function amSvg(a){const p=AICON[a]||'M20 6 9 17l-5-5';return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg>`;}
+  function openModal(r){
+    const imgs=r.images||[];
+    let gal;
+    if(imgs.length){gal='<div class="gal">'+imgs.slice(0,5).map((u,i)=>`<img class="g${i}" src="${thumb(u)}" referrerpolicy="no-referrer" onclick="window.open('${u}','_blank')" alt="${esc(r.name)} photo">`).join('')+'</div>';}
+    else{gal='<div class="gal"><div class="noimg">No photo available on Google yet</div></div>';}
+    const am=(r.amenities||[]).length?`<div class="sec"><h3>Amenities (from Google)</h3><div class="amgrid">${r.amenities.map(a=>`<div class="a">${amSvg(a)}${esc(a)}</div>`).join('')}</div></div>`:'';
+    const tags=(r.review_tags||[]).length?`<div class="sec"><h3>What students mention</h3><div class="chips">${r.review_tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div></div>`:'';
+    const conf=r.confirmed?`<span class="tick" style="position:static;background:var(--ok)">${tickSvg} Confirmed contact</span>`:'';
+    document.getElementById('sheet').innerHTML=`<button class="closex" onclick="closeModal()">✕</button>${gal}
+      <div class="pad">
+        <div class="row" style="justify-content:space-between"><h2 style="flex:1">${esc(r.name)}</h2></div>
+        <div class="row">${conf}<span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span>${r.km_from_knust!=null?`<span class="badge" style="background:rgba(245,158,11,.14);color:var(--cta-press)">${r.km_from_knust} km to KNUST</span>`:''}${r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:''}</div>
+        <div class="sec"><div class="mact">
+          ${r.phone?`<a class="btn primary" href="tel:${tel(r.phone)}">Call ${r.confirmed?'manager':''} ${esc(r.phone)}</a>`:''}
+          <a class="btn dark" href="${mapsUrl(r)}" target="_blank" rel="noopener">Google Maps</a>
+          <a class="btn" href="${dirUrl(r)}" target="_blank" rel="noopener">Directions</a>
+          ${r.website?`<a class="btn" href="${/^https?:/.test(r.website)?r.website:'https://'+r.website}" target="_blank" rel="noopener">Website</a>`:''}
+        </div></div>
+        ${am}${tags}
+        <div class="sec"><h3>Recommended for</h3><div class="chips">${(r.colleges||[]).map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div></div>
+        <div class="mdisc">Prices aren't shown here because most hostels don't publish them online — <b>call the manager for current fees</b>. Contact may be outdated; verify and inspect before paying. This is an independent student project, not affiliated with KNUST.</div>
+      </div>`;
+    document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';
+  }
+  window.closeModal=()=>{document.getElementById('modal').classList.remove('open');document.body.style.overflow='';};
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  document.getElementById('grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openModal(H[+c.dataset.id]);});
 
-  // ---- theme ----
-  const tb=document.getElementById('themeBtn');
-  tb.addEventListener('click',()=>{
-    const d=document.documentElement.getAttribute('data-theme')==='dark';
-    document.documentElement.setAttribute('data-theme',d?'light':'dark');
-    setTimeout(()=>map.invalidateSize(),50);
+  // search suggestions
+  const sugg=document.getElementById('sugg'),qel=document.getElementById('q');
+  qel.addEventListener('input',()=>{
+    apply();
+    const v=qel.value.trim().toLowerCase();
+    if(v.length<2){sugg.classList.remove('open');return;}
+    const hits=H.filter(r=>r.name.toLowerCase().includes(v)).slice(0,8);
+    if(!hits.length){sugg.classList.remove('open');return;}
+    sugg.innerHTML=hits.map(r=>`<div data-n="${esc(r.name)}"><span>${esc(r.name)}</span><span class="s-area">${esc(r.area)}</span></div>`).join('');
+    sugg.classList.add('open');
   });
+  sugg.addEventListener('click',e=>{const d=e.target.closest('div[data-n]');if(d){qel.value=d.dataset.n;sugg.classList.remove('open');apply();}});
+  document.addEventListener('click',e=>{if(!e.target.closest('.searchwrap'))sugg.classList.remove('open');});
 
-  // ---- wire up ----
-  ['q','area','cat','minr','sort','gpsonly'].forEach(id=>{
-    const el=document.getElementById(id);
-    el.addEventListener(id==='q'?'input':'change',applyFilters);
-  });
+  document.getElementById('amenbar').addEventListener('click',e=>{const b=e.target.closest('.atog');if(!b)return;
+    const a=b.dataset.a;if(activeAmen.has(a)){activeAmen.delete(a);b.classList.remove('on');}else{activeAmen.add(a);b.classList.add('on');}apply();});
+  document.getElementById('areas').addEventListener('click',e=>{const c=e.target.closest('.areachip');if(c){areaSel.value=c.dataset.area;apply();window.scrollTo({top:document.getElementById('map').offsetTop-10,behavior:'smooth'});}});
+  ['college','area','cat','sort','confonly','photoonly'].forEach(id=>document.getElementById(id).addEventListener('change',apply));
   document.getElementById('moreBtn').addEventListener('click',()=>{shown+=PAGE;render();});
+  document.getElementById('themeBtn').addEventListener('click',()=>{const d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'light':'dark');setTimeout(()=>map.invalidateSize(),50);});
+  document.getElementById('csvBtn').addEventListener('click',()=>{
+    const cols=['name','area','category','km_from_knust','rating','reviews','phone','confirmed','website','lat','lng','maps_url'];
+    const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+    const rows=[cols.join(',')].concat(filtered.map(r=>cols.map(c=>q(r[c])).join(',')));
+    const b=new Blob([rows.join('\r\n')],{type:'text/csv'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='knust_hostels.csv';a.click();});
 
-  applyFilters();
-  setTimeout(()=>map.invalidateSize(),200);
+  H.forEach((r,i)=>r._i=i);
+  apply();setTimeout(()=>map.invalidateSize(),200);
 })();
 </script>
 </body>
