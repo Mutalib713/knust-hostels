@@ -16,6 +16,10 @@ try:
     MP = json.load(open(os.path.join(OUT,'mp_contacts.json'), encoding='utf-8'))
 except FileNotFoundError:
     MP = []
+try:
+    GEO = json.load(open(os.path.join(OUT,'mp_geocode.json'), encoding='utf-8'))  # forward-geocoded coords for MP-added hostels
+except FileNotFoundError:
+    GEO = {}
 PRICES = json.load(open(os.path.join(OUT,'prices.json'), encoding='utf-8'))
 # getrooms.co scraped prices, keyed by EXACT hostel name (takes precedence over substring prices.json)
 try:
@@ -177,11 +181,12 @@ for m in MP:
     if m['name'].lower() in _alias_lc: continue
     if _in_clean(m['name']): continue
     ar = _area_norm(m['area'])
+    g = GEO.get(m['name'], {})
     clean.append({
         'name': m['name'], 'area': ar, 'category': 'Hostel',
-        'km_from_knust': None, 'lat': None, 'lng': None,
+        'km_from_knust': g.get('km_from_knust'), 'lat': g.get('lat'), 'lng': g.get('lng'),
         'maps_url': 'https://www.google.com/maps/search/?api=1&query=' + urllib.parse.quote(m['name'] + ' hostel KNUST Kumasi'),
-        'website': '', 'rating': None, 'reviews': 0, 'coord_reliable': False, 'closed': False,
+        'website': '', 'rating': None, 'reviews': 0, 'coord_reliable': (g.get('geo_src') == 'nominatim'), 'closed': False,
         'phone': m['phone'], 'manager_phone': m['phone'], 'confirmed': True,
         'images': [], 'amenities': [], 'review_tags': [], 'colleges': colleges_for(ar),
         'price_from': None, 'rooms': [], 'price_src': '', 'added_from': 'mp_list',

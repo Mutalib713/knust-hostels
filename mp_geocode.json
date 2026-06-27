@@ -1,0 +1,578 @@
+{
+ "Abundance Grace": {
+  "lat": 6.67473,
+  "lng": -1.555449,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "AdomB": {
+  "lat": 6.67209,
+  "lng": -1.555869,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "Afrim": {
+  "lat": 6.674394,
+  "lng": -1.555503,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "Amanda": {
+  "lat": 6.673032,
+  "lng": -1.556625,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Amen Main": {
+  "lat": 6.675948,
+  "lng": -1.559589,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "Amen Annex": {
+  "lat": 6.67569,
+  "lng": -1.556295,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Amen Inn": {
+  "lat": 6.67188,
+  "lng": -1.559709,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "American House": {
+  "lat": 6.672324,
+  "lng": -1.555617,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "Anclan": {
+  "lat": 6.687154,
+  "lng": -1.555248,
+  "km_from_knust": 2.3,
+  "geo_src": "area-centroid"
+ },
+ "Blue Ark": {
+  "lat": 6.686575,
+  "lng": -1.584956,
+  "km_from_knust": 2,
+  "geo_src": "area-centroid"
+ },
+ "Asansik": {
+  "lat": 6.677064,
+  "lng": -1.557249,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "B Executive": {
+  "lat": 6.677328,
+  "lng": -1.558299,
+  "km_from_knust": 1.5,
+  "geo_src": "area-centroid"
+ },
+ "Banivillias": {
+  "lat": 6.689668,
+  "lng": -1.55604,
+  "km_from_knust": 2.4,
+  "geo_src": "area-centroid"
+ },
+ "Beacon Hostel": {
+  "lat": 6.674022,
+  "lng": -1.555581,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "By His Grace": {
+  "lat": 6.674826,
+  "lng": -1.557627,
+  "km_from_knust": 1.5,
+  "geo_src": "area-centroid"
+ },
+ "Canam Hall": {
+  "lat": 6.667755,
+  "lng": -1.568621,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Canam Gold": {
+  "lat": 6.665685,
+  "lng": -1.568717,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Canam Executive": {
+  "lat": 6.665493,
+  "lng": -1.564613,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "CasaMaria": {
+  "lat": 6.67656,
+  "lng": -1.563009,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "CeliaRoyal": {
+  "lat": 6.667947,
+  "lng": -1.566317,
+  "km_from_knust": 0.9,
+  "geo_src": "area-centroid"
+ },
+ "CerosHostel": {
+  "lat": 6.675174,
+  "lng": -1.562847,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Charis": {
+  "lat": 6.677316,
+  "lng": -1.554159,
+  "km_from_knust": 2,
+  "geo_src": "area-centroid"
+ },
+ "Cresthaven": {
+  "lat": 6.666279,
+  "lng": -1.569041,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Crystal Rose": {
+  "lat": 6.68791,
+  "lng": -1.554222,
+  "km_from_knust": 2.4,
+  "geo_src": "area-centroid"
+ },
+ "Darkens Int'": {
+  "lat": 6.672972,
+  "lng": -1.561545,
+  "km_from_knust": 1.1,
+  "geo_src": "area-centroid"
+ },
+ "Manchester": {
+  "lat": 6.665157,
+  "lng": -1.560581,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "Mass": {
+  "lat": 6.668373,
+  "lng": -1.561583,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "Millennium Light": {
+  "lat": 6.675768,
+  "lng": -1.559841,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "Morning Star Palace": {
+  "lat": 6.685219,
+  "lng": -1.578158,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Nana Addomah": {
+  "lat": 6.6747,
+  "lng": -1.554771,
+  "km_from_knust": 1.9,
+  "geo_src": "area-centroid"
+ },
+ "Nevada": {
+  "lat": 6.67251,
+  "lng": -1.565409,
+  "km_from_knust": 0.7,
+  "geo_src": "area-centroid"
+ },
+ "No Weapon": {
+  "lat": 6.668991,
+  "lng": -1.558697,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "No Weapon Annex": {
+  "lat": 6.665175,
+  "lng": -1.564547,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "Nyame Mireku": {
+  "lat": 6.677094,
+  "lng": -1.564737,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Ountak Hostel": {
+  "lat": 6.675402,
+  "lng": -1.564635,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Orange Hostel": {
+  "lat": 6.664083,
+  "lng": -1.557725,
+  "km_from_knust": 1.9,
+  "geo_src": "area-centroid"
+ },
+ "Outlook Hostel": {
+  "lat": 6.672,
+  "lng": -1.564827,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Pii Hostel": {
+  "lat": 6.671838,
+  "lng": -1.564083,
+  "km_from_knust": 0.9,
+  "geo_src": "area-centroid"
+ },
+ "Piramang Hostel": {
+  "lat": 6.67536,
+  "lng": -1.554957,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "Premier Tower Palace": {
+  "lat": 6.668799,
+  "lng": -1.564607,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Providence": {
+  "lat": 6.668103,
+  "lng": -1.564925,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "R B & D": {
+  "lat": 6.677112,
+  "lng": -1.556007,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Richbad": {
+  "lat": 6.668307,
+  "lng": -1.568561,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Rising Star (Nyberg)": {
+  "lat": 6.664473,
+  "lng": -1.564247,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Rising Sun": {
+  "lat": 6.676848,
+  "lng": -1.557507,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "Royal Gate Hostel": {
+  "lat": 6.682969,
+  "lng": -1.57778,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "Shalom Kigutz": {
+  "lat": 6.674172,
+  "lng": -1.564515,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Shepherdsville": {
+  "lat": 6.664065,
+  "lng": -1.564223,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Sompa": {
+  "lat": 6.665721,
+  "lng": -1.562447,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Splendor": {
+  "lat": 6.6774662,
+  "lng": -1.5575408,
+  "km_from_knust": 1.6,
+  "geo_src": "nominatim"
+ },
+ "DeLisa Hostel Annex": {
+  "lat": 6.677262,
+  "lng": -1.562169,
+  "km_from_knust": 1.1,
+  "geo_src": "area-centroid"
+ },
+ "DeLisa Hostel Main": {
+  "lat": 6.667377,
+  "lng": -1.565603,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Destiny View": {
+  "lat": 6.693937,
+  "lng": -1.561409,
+  "km_from_knust": 2.4,
+  "geo_src": "area-centroid"
+ },
+ "Devlaipah": {
+  "lat": 6.665949,
+  "lng": -1.558661,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Divine Karma": {
+  "lat": 6.677502,
+  "lng": -1.556877,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Enin": {
+  "lat": 6.675528,
+  "lng": -1.559019,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Fosua Homes": {
+  "lat": 6.675792,
+  "lng": -1.562565,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Fun XXL": {
+  "lat": 6.668895,
+  "lng": -1.557809,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "F Plaza": {
+  "lat": 6.674976,
+  "lng": -1.561593,
+  "km_from_knust": 1.1,
+  "geo_src": "area-centroid"
+ },
+ "Franco Hostel": {
+  "lat": 6.667017,
+  "lng": -1.566059,
+  "km_from_knust": 1,
+  "geo_src": "area-centroid"
+ },
+ "Frontline Apartment": {
+  "lat": 6.6716397,
+  "lng": -1.5611957,
+  "km_from_knust": 1.2,
+  "geo_src": "nominatim"
+ },
+ "Frontline Court": {
+  "lat": 6.6690886,
+  "lng": -1.5635969,
+  "km_from_knust": 1.1,
+  "geo_src": "nominatim"
+ },
+ "Frontline Inn": {
+  "lat": 6.6721531,
+  "lng": -1.5623573,
+  "km_from_knust": 1.1,
+  "geo_src": "nominatim"
+ },
+ "GeorgiaHostel": {
+  "lat": 6.689278,
+  "lng": -1.552572,
+  "km_from_knust": 2.7,
+  "geo_src": "area-centroid"
+ },
+ "Ghana Hostels": {
+  "lat": 6.687898,
+  "lng": -1.552212,
+  "km_from_knust": 2.6,
+  "geo_src": "area-centroid"
+ },
+ "Glory be to God": {
+  "lat": 6.6764972,
+  "lng": -1.5558176,
+  "km_from_knust": 1.8,
+  "geo_src": "nominatim"
+ },
+ "Happy Family": {
+  "lat": 6.6771,
+  "lng": -1.563849,
+  "km_from_knust": 0.9,
+  "geo_src": "area-centroid"
+ },
+ "High Achievers": {
+  "lat": 6.6734851,
+  "lng": -1.5493964,
+  "km_from_knust": 2.5,
+  "geo_src": "nominatim"
+ },
+ "Honesty Hostel": {
+  "lat": 6.680014,
+  "lng": -1.557772,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "Hydes": {
+  "lat": 6.666963,
+  "lng": -1.560275,
+  "km_from_knust": 1.5,
+  "geo_src": "area-centroid"
+ },
+ "JNS": {
+  "lat": 6.685105,
+  "lng": -1.58132,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "Jenest Hostel": {
+  "lat": 6.673452,
+  "lng": -1.555311,
+  "km_from_knust": 1.8,
+  "geo_src": "area-centroid"
+ },
+ "Jalex Hostel": {
+  "lat": 6.673614,
+  "lng": -1.556001,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Jecado Hostel": {
+  "lat": 6.676902,
+  "lng": -1.557405,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "Jita Hostel": {
+  "lat": 6.677094,
+  "lng": -1.564485,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Jita 2": {
+  "lat": 6.676968,
+  "lng": -1.561119,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "Johannes": {
+  "lat": 6.668949,
+  "lng": -1.567721,
+  "km_from_knust": 0.8,
+  "geo_src": "area-centroid"
+ },
+ "Kgee": {
+  "lat": 6.674844,
+  "lng": -1.558011,
+  "km_from_knust": 1.5,
+  "geo_src": "area-centroid"
+ },
+ "Kwayekwaa": {
+  "lat": 6.664971,
+  "lng": -1.566113,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "LongIsland": {
+  "lat": 6.667011,
+  "lng": -1.562687,
+  "km_from_knust": 1.3,
+  "geo_src": "area-centroid"
+ },
+ "Standard": {
+  "lat": 6.684661,
+  "lng": -1.575794,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "Suncity": {
+  "lat": 6.6887516,
+  "lng": -1.5547478,
+  "km_from_knust": 2.4,
+  "geo_src": "nominatim"
+ },
+ "The Best": {
+  "lat": 6.665103,
+  "lng": -1.559801,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "The Hopes Community": {
+  "lat": 6.67161,
+  "lng": -1.558683,
+  "km_from_knust": 1.5,
+  "geo_src": "area-centroid"
+ },
+ "The Liberty": {
+  "lat": 6.668349,
+  "lng": -1.560581,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Think Jesus": {
+  "lat": 6.677728,
+  "lng": -1.560898,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "Thy Kingdom Come": {
+  "lat": 6.6747,
+  "lng": -1.559313,
+  "km_from_knust": 1.4,
+  "geo_src": "area-centroid"
+ },
+ "Thy Will Be Done": {
+  "lat": 6.666981,
+  "lng": -1.564205,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "Ultimate Hostel": {
+  "lat": 6.685483,
+  "lng": -1.581842,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Victory Towers": {
+  "lat": 6.67554,
+  "lng": -1.555821,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Wagyingo": {
+  "lat": 6.673338,
+  "lng": -1.554135,
+  "km_from_knust": 1.9,
+  "geo_src": "area-centroid"
+ },
+ "Westend": {
+  "lat": 6.674076,
+  "lng": -1.563711,
+  "km_from_knust": 0.9,
+  "geo_src": "area-centroid"
+ },
+ "Whiten House": {
+  "lat": 6.667467,
+  "lng": -1.563215,
+  "km_from_knust": 1.2,
+  "geo_src": "area-centroid"
+ },
+ "Whitpam A": {
+  "lat": 6.664611,
+  "lng": -1.560509,
+  "km_from_knust": 1.6,
+  "geo_src": "area-centroid"
+ },
+ "Whitpam B": {
+  "lat": 6.672672,
+  "lng": -1.556619,
+  "km_from_knust": 1.7,
+  "geo_src": "area-centroid"
+ },
+ "Zoro": {
+  "lat": 6.693115,
+  "lng": -1.555877,
+  "km_from_knust": 2.7,
+  "geo_src": "area-centroid"
+ }
+}
