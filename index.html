@@ -153,7 +153,7 @@
   .lb button{position:absolute;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;width:50px;height:50px;border-radius:50%;font-size:24px;cursor:pointer}
   .lb .prev{left:20px}.lb .next{right:20px}.lb .close{top:20px;right:20px;width:42px;height:42px}
 
-  .totop{position:fixed;right:16px;bottom:16px;z-index:80;width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none;align-items:center;justify-content:center}
+  .totop{position:fixed;right:18px;bottom:82px;z-index:80;width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none;align-items:center;justify-content:center}
   .totop.show{display:flex}.totop:hover{background:#1b399c}
   footer{border-top:1px solid var(--border);background:var(--card);padding:24px 0;margin-top:10px;color:var(--muted);font-size:13px}footer b{color:var(--heading)}
   /* results count in the search bar (next to Filters) */
@@ -195,6 +195,51 @@
     .field{flex:1 1 100%}.field select{width:100%}.book{padding:16px}
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  /* ===== Ama — on-page hostel assistant ===== */
+  .cbtab{position:fixed;right:18px;bottom:18px;z-index:85;display:inline-flex;align-items:center;gap:9px;height:52px;padding:0 18px 0 15px;border:none;border-radius:999px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(30,64,175,.42);transition:transform .15s,box-shadow .15s}
+  .cbtab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(30,64,175,.5)}
+  .cbtab:focus-visible{outline:3px solid var(--cta);outline-offset:2px}
+  .cbtab .cbdot{position:absolute;top:0;right:2px;width:13px;height:13px;border-radius:50%;background:var(--cta);border:2px solid #fff}
+  .cbtab.hide{display:none}
+  .cbpanel{position:fixed;right:18px;bottom:18px;z-index:90;width:382px;max-width:calc(100vw - 28px);height:min(72vh,580px);background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 24px 60px rgba(8,12,22,.42);display:none;flex-direction:column;overflow:hidden}
+  .cbpanel.open{display:flex;animation:cbIn .22s ease}
+  @keyframes cbIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+  .cbhead{display:flex;align-items:center;gap:11px;padding:13px 14px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff}
+  .cbava{width:38px;height:38px;border-radius:50%;background:var(--cta);color:#3a2606;display:grid;place-items:center;font-weight:800;font-size:18px;flex-shrink:0}
+  .cbhtitle{flex:1;line-height:1.18}.cbhtitle b{font-size:15px;font-weight:700}
+  .cbhtitle small{display:flex;align-items:center;gap:5px;font-size:11.5px;opacity:.9}
+  .cbonline{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block}
+  .cbx{background:rgba(255,255,255,.16);border:none;color:#fff;width:32px;height:32px;border-radius:9px;cursor:pointer;display:grid;place-items:center}
+  .cbx:hover{background:rgba(255,255,255,.3)}
+  .cbbody{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;background:var(--bg)}
+  .cbmsg{display:flex;gap:8px;max-width:93%}.cbmsg.user{align-self:flex-end}
+  .cbmava{width:26px;height:26px;border-radius:50%;background:var(--cta);color:#3a2606;display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
+  .cbbubble{background:var(--card);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;padding:10px 12px;font-size:13.5px;line-height:1.5;color:var(--text)}
+  .cbmsg.user .cbbubble{background:var(--primary);color:#fff;border-color:var(--primary);border-top-left-radius:14px;border-top-right-radius:4px}
+  .cbbubble p{margin:0}.cbbubble b{font-weight:700}
+  .cbcards{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+  .cbcard{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:8px 10px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+  .cbcard:hover,.cbcard:focus-visible{border-color:var(--primary-2);box-shadow:0 2px 10px rgba(30,64,175,.15);outline:none}
+  .cbcard-info{flex:1;min-width:0}
+  .cbcard-name{font-size:13px;font-weight:700;color:var(--heading);display:flex;align-items:center;gap:5px;line-height:1.2}
+  .cbcard-name .cbtk{width:14px;height:14px;background:var(--ok);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cbcard-meta{font-size:11.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cbcall{width:34px;height:34px;border-radius:9px;background:var(--ok);color:#fff;display:grid;place-items:center;flex-shrink:0;text-decoration:none}
+  .cbcall:hover{filter:brightness(1.08)}
+  .cbtyping{display:flex;gap:4px;padding:3px 2px}
+  .cbtyping span{width:7px;height:7px;border-radius:50%;background:var(--faint);animation:cbBlink 1.2s infinite}
+  .cbtyping span:nth-child(2){animation-delay:.2s}.cbtyping span:nth-child(3){animation-delay:.4s}
+  @keyframes cbBlink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+  .cbchips{display:flex;gap:7px;padding:9px 12px 5px;flex-wrap:wrap;background:var(--bg);border-top:1px solid var(--border)}
+  .cbchip{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
+  .cbchip:hover{border-color:var(--cta);color:var(--cta-press)}
+  .cbform{display:flex;gap:8px;padding:10px 12px;background:var(--bg);border-top:1px solid var(--border)}
+  .cbform input{flex:1;height:42px;border-radius:11px;border:1px solid var(--border);background:var(--card);color:var(--text);padding:0 13px;font-size:14px;font-family:inherit}
+  .cbform input:focus{outline:2px solid var(--primary-2)}
+  .cbsend{width:42px;height:42px;border-radius:11px;border:none;background:var(--primary);color:#fff;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
+  .cbsend:hover{background:var(--heading)}
+  @media(max-width:560px){.cbpanel{right:8px;left:8px;bottom:8px;top:8px;width:auto;height:auto;max-width:none}.cbtab span:last-child{display:none}.cbtab{padding:0;width:54px;height:54px;justify-content:center;gap:0}}
+  @media(prefers-reduced-motion:reduce){.cbpanel.open{animation:none}.cbtab,.cbtab:hover{transition:none;transform:none}.cbtyping span{animation:none;opacity:.55}}
 </style>
 </head>
 <body>
@@ -299,6 +344,22 @@
 <button class="totop" id="totop" aria-label="Back to top"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="lb" id="lb"><button class="close" onclick="lbClose()" aria-label="Close">✕</button><button class="prev" onclick="lbStep(-1)" aria-label="Previous">‹</button><img id="lbimg" referrerpolicy="no-referrer" alt="Hostel photo"><button class="next" onclick="lbStep(1)" aria-label="Next">›</button></div>
+
+<!-- Ama — free on-page hostel assistant -->
+<button class="cbtab" id="cbTab" aria-haspopup="dialog" aria-expanded="false" aria-controls="cbPanel" aria-label="Open Ama, the hostel assistant"><span class="cbdot" aria-hidden="true"></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Ask Ama</span></button>
+<div class="cbpanel" id="cbPanel" role="dialog" aria-label="Ama hostel assistant" aria-modal="false">
+  <div class="cbhead">
+    <div class="cbava" aria-hidden="true">A</div>
+    <div class="cbhtitle"><b>Ama</b><small><span class="cbonline" aria-hidden="true"></span>KNUST hostel finder</small></div>
+    <button class="cbx" id="cbClose" aria-label="Close assistant"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="cbbody" id="cbBody" aria-live="polite"></div>
+  <div class="cbchips" id="cbChips"></div>
+  <form class="cbform" id="cbForm" autocomplete="off">
+    <input id="cbInput" type="text" placeholder="e.g. confirmed hostels in Ayeduase under 3000" aria-label="Ask Ama about hostels">
+    <button type="submit" class="cbsend" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+  </form>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="data.js"></script>
@@ -501,6 +562,121 @@
   const meanR=(()=>{let s=0,n=0;H.forEach(h=>{if(h.rating){s+=h.rating;n++;}});return n?s/n:4;})();
   H.forEach((r,i)=>{r._i=i;const base=(r.rating||meanR)*Math.log10((r.reviews||0)+1);r._pop=(r.closed?base*0.05:base)+(r.confirmed?0.2:0)+(r.images&&r.images.length?0.1:0)+(r.price_from?0.1:0);});
   apply();setTimeout(()=>{if(map)map.invalidateSize();},200);
+
+  /* ===== Ama — free on-page hostel assistant (searches HOSTELS, no API) ===== */
+  (function(){
+    const tab=document.getElementById('cbTab'),panel=document.getElementById('cbPanel'),body=document.getElementById('cbBody'),
+          chipsEl=document.getElementById('cbChips'),form=document.getElementById('cbForm'),input=document.getElementById('cbInput'),closeBtn=document.getElementById('cbClose');
+    if(!tab) return;
+    const nrm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    const callSvg='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+    const tkSvg='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    const AREA_SYN=[[/ayeduase|new ?site/,'Ayeduase'],[/kotei/,'Kotei'],[/bomso/,'Bomso'],[/gaza|ghana hostel/,'Gaza'],[/kentin?krono|nsenie/,'Kentinkrono'],[/oduom/,'Oduom'],[/boadi/,'Boadi'],[/anloga/,'Anloga Junction'],[/ayigya/,'Ayigya'],[/deduako/,'Deduako'],[/oforikrom/,'Oforikrom'],[/anwomaso/,'Anwomaso'],[/gyinyase/,'Gyinyase'],[/emena/,'Emena'],[/appiadu/,'Appiadu'],[/susuanso/,'Susuanso (campus edge)'],[/on ?campus|\bhalls?\b/,'On Campus (KNUST)']];
+    const COLLEGE_SYN=[[/engineer/,'Engineering'],[/\bscience\b|\bcos\b/,'Science'],[/\bart\b|built environment|architect|cabe/,'Art & Built Environment'],[/business|\bksb\b|humanities|social scien|\blaw\b/,'Humanities & Social Sciences (KSB)'],[/health|medic|pharmac|nursing|\bchs\b/,'Health Sciences'],[/agric|natural resource|\bcanr\b/,'Agriculture & Natural Resources']];
+    function parse(t){
+      const s={areas:[],college:null,priceMin:null,priceMax:null,confirmed:false,photos:false,near:false,walk:false,best:false,cheapest:false,roomType:null,category:null,minRating:null};
+      AREA_SYN.forEach(([re,a])=>{if(re.test(t)&&(M.areas||[]).includes(a)&&!s.areas.includes(a))s.areas.push(a);});
+      for(const [re,c] of COLLEGE_SYN){if(re.test(t)&&(M.colleges||[]).includes(c)){s.college=c;break;}}
+      s.confirmed=/confirm|verified|trusted|with (a )?(number|contact)|can call|reachable/.test(t);
+      s.photos=/photo|picture|image|see inside|\bpics?\b/.test(t);
+      s.near=/near|close to|closest|nearest|walking|by campus/.test(t);
+      s.walk=/walk(ing)? ?distance|walkable|walk to/.test(t);
+      s.best=/best|top[- ]?rated|highly rated|good rating|good review|popular/.test(t);
+      s.cheapest=/cheap|cheapest|affordable|budget|low(est)? ?price/.test(t);
+      if(/2 ?in ?(a|1|one)|two in|double/.test(t))s.roomType='2';else if(/1 ?in ?(a|1|one)|single/.test(t))s.roomType='1';else if(/3 ?in ?(a|1|one)|three in/.test(t))s.roomType='3';else if(/4 ?in ?(a|1|one)|four in|quad/.test(t))s.roomType='4';
+      if(/\bhotel\b/.test(t))s.category='Hotel';else if(/guest ?house/.test(t))s.category='Guest house';
+      if(/well rated|good rating|4 ?\+|highly rated|top rated/.test(t))s.minRating=4;
+      const nums=[];t.replace(/(\d[\d,\.]*)\s*(k)?/gi,(m,n,k)=>{let v=parseFloat(n.replace(/,/g,''));if(k)v*=1000;if(v>=300)nums.push(Math.round(v));return m;});
+      const between=/between|–|—/.test(t)||/\d\s*(?:-|to)\s*\d/.test(t);
+      if(between&&nums.length>=2){s.priceMin=Math.min(...nums);s.priceMax=Math.max(...nums);}
+      else if(/under|below|less than|max|up to|within|cheaper than|budget of|<=?/.test(t)&&nums.length)s.priceMax=nums[0];
+      else if(/over|above|more than|at least/.test(t)&&nums.length)s.priceMin=nums[0];
+      else if(/around|about|approximately|~/.test(t)&&nums.length){s.priceMin=Math.round(nums[0]*.85);s.priceMax=Math.round(nums[0]*1.15);}
+      else if(nums.length&&/ghs|cedis|budget|price|afford|spend/.test(t))s.priceMax=nums[0];
+      return s;
+    }
+    const has=s=>s.areas.length||s.college||s.priceMin!=null||s.priceMax!=null||s.confirmed||s.photos||s.near||s.best||s.cheapest||s.roomType||s.category||s.minRating!=null;
+    function search(s){
+      let r=H.filter(h=>{
+        if(s.areas.length&&!s.areas.includes(h.area))return false;
+        if(s.college&&!(h.colleges||[]).includes(s.college))return false;
+        if(s.confirmed&&!h.confirmed)return false;
+        if(s.photos&&!(h.images&&h.images.length))return false;
+        if(s.category&&h.category!==s.category)return false;
+        if(s.minRating!=null&&(h.rating||0)<s.minRating)return false;
+        if(s.priceMax!=null&&(h.price_from==null||h.price_from>s.priceMax))return false;
+        if(s.priceMin!=null&&(h.price_from==null||h.price_from<s.priceMin))return false;
+        if(s.walk&&(h.km_from_knust==null||h.km_from_knust>2))return false;
+        if(s.roomType&&!(h.rooms||[]).some(rm=>String(rm[0]).indexOf(s.roomType+'-')===0))return false;
+        return true;
+      });
+      if(s.cheapest)r.sort((a,b)=>(a.price_from||1e9)-(b.price_from||1e9));
+      else if(s.near)r.sort((a,b)=>(a.km_from_knust==null?9:a.km_from_knust)-(b.km_from_knust==null?9:b.km_from_knust));
+      else r.sort((a,b)=>(b._pop||0)-(a._pop||0));
+      return r;
+    }
+    function describe(s,noP){
+      const p=[];
+      if(s.category)p.push(s.category.toLowerCase()+'s');
+      if(s.areas.length)p.push('in '+s.areas.join(' or '));
+      if(s.college)p.push('handy for '+s.college.replace(' (KSB)','')+' students');
+      if(s.confirmed)p.push('with a confirmed contact');
+      if(s.photos)p.push('with photos');
+      if(s.roomType)p.push(s.roomType+'-in-a-room');
+      if(!noP){if(s.priceMin!=null&&s.priceMax!=null)p.push('between GHS '+s.priceMin.toLocaleString()+' and '+s.priceMax.toLocaleString());else if(s.priceMax!=null)p.push('under GHS '+s.priceMax.toLocaleString());else if(s.priceMin!=null)p.push('above GHS '+s.priceMin.toLocaleString());}
+      if(s.walk)p.push('within walking distance');else if(s.near)p.push('close to campus');
+      if(s.minRating)p.push('well rated');
+      return p.join(', ');
+    }
+    function compose(s,res){
+      const d=describe(s);
+      if(!res.length){
+        if(s.priceMax!=null||s.priceMin!=null){const alt=search(Object.assign({},s,{priceMin:null,priceMax:null}));if(alt.length)return {text:'No hostels matched '+(d||'that')+". Only <b>"+M.with_price+'</b> hostels list prices online, so here are '+Math.min(alt.length,5)+' '+(describe(s,true)||'options')+' without the price limit:',cards:alt.slice(0,5)};}
+        return {text:"I couldn't find hostels "+(d||'like that')+'. Try another area or a higher budget — or tap a suggestion below.'};
+      }
+      const n=res.length,show=Math.min(n,5),ord=s.cheapest?' (cheapest first)':s.near?' (closest first)':s.best?' (top rated first)':' (most popular first)';
+      return {text:'Found <b>'+n+'</b> hostel'+(n>1?'s':'')+(d?' '+d:'')+'. Showing '+show+ord+':',cards:res.slice(0,show)};
+    }
+    function named(t){
+      const nq=nrm(t);if(nq.length<4)return [];
+      const out=[];H.forEach(h=>{const nn=nrm(h.name);if(nn.length>=4&&(nq.indexOf(nn)>=0||nn.indexOf(nq)>=0))out.push(h);});
+      return out.length<=6?out:[];
+    }
+    function welcome(){return "Hi, I'm <b>Ama</b> — your KNUST hostel finder. Tell me what you're after and I'll search all <b>"+M.total+"</b> hostels. e.g. “confirmed hostels in Ayeduase under 3000” or “cheapest near campus”.";}
+    function answer(q){
+      const t=q.toLowerCase().trim();
+      if(!t)return {text:'Tell me what you need — e.g. “cheap hostels in Ayeduase with a confirmed contact”.'};
+      if(/^(hi|hello|hey|yo|hiya|good (morning|afternoon|evening)|akwaaba)/.test(t)||/who are you|what can you do|how (do|does)|help me|^help$/.test(t))return {text:welcome()};
+      if(/^(thanks|thank you|thx|ok|okay|nice|cool|great)/.test(t)&&t.length<16)return {text:"Anytime! Ask me about any KNUST hostel — area, budget, confirmed contacts, photos or distance."};
+      if(/how many hostels|total hostels|number of hostels/.test(t))return {text:'There are <b>'+M.total+'</b> hostels here across '+(M.areas||[]).length+' areas — <b>'+M.confirmed+'</b> with confirmed contacts and <b>'+M.with_price+'</b> with published prices.'};
+      const s=parse(t);
+      if(has(s))return compose(s,search(s));
+      const nm=named(t);
+      if(nm.length){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:nm.slice(0,3)};}
+      return {text:"I can search by <b>area</b>, <b>budget</b>, <b>college</b>, <b>confirmed contact</b>, photos or distance. Try a suggestion below ↓"};
+    }
+    function cardHTML(h){
+      const price=h.price_from?'from GHS '+h.price_from.toLocaleString():'',km=h.km_from_knust!=null?h.km_from_knust+' km':'',rat=h.rating?'★ '+h.rating.toFixed(1):'New';
+      const meta=[h.area,price,km,rat].filter(Boolean).join(' · ');
+      return '<div class="cbcard" data-i="'+h._i+'" role="button" tabindex="0" aria-label="'+esc(h.name)+', tap for details">'+
+        '<div class="cbcard-info"><div class="cbcard-name">'+esc(h.name)+(h.confirmed?' <span class="cbtk" title="Confirmed contact">'+tkSvg+'</span>':'')+'</div><div class="cbcard-meta">'+esc(meta)+'</div></div>'+
+        (h.phone?'<a class="cbcall" href="tel:'+tel(h.phone)+'" aria-label="Call '+esc(h.name)+'" onclick="event.stopPropagation()">'+callSvg+'</a>':'')+'</div>';
+    }
+    function addMsg(role,html){const m=document.createElement('div');m.className='cbmsg '+role;m.innerHTML=(role==='bot'?'<div class="cbmava" aria-hidden="true">A</div>':'')+'<div class="cbbubble">'+html+'</div>';body.appendChild(m);body.scrollTop=body.scrollHeight;return m;}
+    function typing(){const m=document.createElement('div');m.className='cbmsg bot';m.innerHTML='<div class="cbmava" aria-hidden="true">A</div><div class="cbbubble"><div class="cbtyping"><span></span><span></span><span></span></div></div>';body.appendChild(m);body.scrollTop=body.scrollHeight;return m;}
+    function respond(q){addMsg('user',esc(q));const tp=typing();setTimeout(()=>{tp.remove();const a=answer(q);let html='<p>'+a.text+'</p>';if(a.cards&&a.cards.length)html+='<div class="cbcards">'+a.cards.map(cardHTML).join('')+'</div>';addMsg('bot',html);},460);}
+    const CHIPS=['Cheapest in Ayeduase','Confirmed contacts near campus','Hostels for Engineering','With photos under 4000','Best rated in Kotei','Gaza under 3000'];
+    chipsEl.innerHTML=CHIPS.map(c=>'<button type="button" class="cbchip">'+c+'</button>').join('');
+    chipsEl.addEventListener('click',e=>{const b=e.target.closest('.cbchip');if(b)respond(b.textContent);});
+    let opened=false;
+    function open(){panel.classList.add('open');tab.classList.add('hide');tab.setAttribute('aria-expanded','true');if(!opened){opened=true;addMsg('bot','<p>'+welcome()+'</p>');}setTimeout(()=>input.focus(),60);}
+    function close(){panel.classList.remove('open');tab.classList.remove('hide');tab.setAttribute('aria-expanded','false');}
+    tab.addEventListener('click',open);closeBtn.addEventListener('click',close);
+    form.addEventListener('submit',e=>{e.preventDefault();const v=input.value.trim();if(!v)return;respond(v);input.value='';});
+    body.addEventListener('click',e=>{const c=e.target.closest('.cbcard');if(c&&!e.target.closest('.cbcall'))openModal(H[+c.dataset.i]);});
+    body.addEventListener('keydown',e=>{if(e.key==='Enter'){const c=e.target.closest('.cbcard');if(c){e.preventDefault();openModal(H[+c.dataset.i]);}}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open')&&!document.getElementById('modal').classList.contains('open')&&!document.getElementById('lb').classList.contains('open'))close();});
+  })();
 })();
 </script>
 </body>
