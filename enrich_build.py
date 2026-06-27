@@ -11,7 +11,17 @@ r2 = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-ge
 sy = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782509233568.txt'), encoding='utf-8'))['items']
 full = json.load(open(os.path.join(TR,'mcp-7e675312-4441-46fb-94ba-7aaa9669b26f-get-dataset-items-1782511669631.txt'), encoding='utf-8'))['items']
 managers = json.load(open(os.path.join(OUT,'managers.json'), encoding='utf-8'))
+# Campus-MP (Bruce Clement '26) KNUST hostel contact list — newer, takes precedence over managers.json
+try:
+    MP = json.load(open(os.path.join(OUT,'mp_contacts.json'), encoding='utf-8'))
+except FileNotFoundError:
+    MP = []
 PRICES = json.load(open(os.path.join(OUT,'prices.json'), encoding='utf-8'))
+# getrooms.co scraped prices, keyed by EXACT hostel name (takes precedence over substring prices.json)
+try:
+    GETROOMS = {g['name']: g for g in json.load(open(os.path.join(OUT,'getrooms_prices.json'), encoding='utf-8'))}
+except FileNotFoundError:
+    GETROOMS = {}
 
 R2 = {it['placeId']: it for it in r2 if it.get('placeId')}
 SY = {it['placeId']: it for it in sy if it.get('placeId')}
@@ -70,7 +80,9 @@ def colleges_for(area):
 # ---- manager-contact matching ----
 def norm(s): return re.sub(r'[^a-z0-9]', '', (s or '').lower())
 mgr = []
-for m in managers:
+for m in MP:        # MP list first -> wins exact matches (newer contacts)
+    mgr.append({'n': norm(m['name']), 'area': m.get('area',''), 'phone': m['phone'], 'raw': m['name']})
+for m in managers:  # SRC managers as fallback / extra coverage
     mgr.append({'n': norm(m['name']), 'area': m['area'], 'phone': m['phone'], 'raw': m['name']})
 
 def match_manager(name):
@@ -117,10 +129,65 @@ for r in tight:
         'confirmed': confirmed,
         'images': imgs, 'amenities': am, 'review_tags': tags,
         'colleges': colleges_for(r['area']),
-        'price_from': (price_for(r['name']) or {}).get('from'),
-        'rooms': (price_for(r['name']) or {}).get('rooms') or [],
-        'price_src': (price_for(r['name']) or {}).get('src') or '',
+        'price_from': (GETROOMS.get(r['name']) or price_for(r['name']) or {}).get('from'),
+        'rooms': (GETROOMS.get(r['name']) or price_for(r['name']) or {}).get('rooms') or [],
+        'price_src': (GETROOMS.get(r['name']) or price_for(r['name']) or {}).get('src') or '',
     })
+
+# ---- MP (Campus-MP) contact list: confirm verified name-variants + add hostels missing from the mapped 501 ----
+ALIAS = {  # MP name (lowercase) -> our exact hostel name (verified variants, prevents duplicates)
+    'the liberty': 'Liberty hostel',
+    'honesty hostel': 'Honesty Student Hostel',
+    'rising star (nyberg)': 'Nyberg Hostel',
+    'ghana hostels': 'Gaza Hostel',
+    'morning star palace': 'Morning Star Hostel',
+    'canam executive': 'Canam executive hostel',
+}
+_by_norm = {}
+for r in clean: _by_norm.setdefault(norm(r['name']), r)
+for m in MP:
+    tgt = ALIAS.get(m['name'].lower())
+    if tgt:
+        r = _by_norm.get(norm(tgt))
+        if r and not r['confirmed']:
+            r['confirmed'] = True; r['phone'] = m['phone']; r['manager_phone'] = m['phone']
+
+def _area_norm(a):
+    a = (a or '').lower()
+    if 'ayeduase' in a or 'newsite' in a or 'new site' in a: return 'Ayeduase'
+    if 'kotei' in a: return 'Kotei'
+    if 'gaza' in a: return 'Gaza'
+    if 'bomso' in a: return 'Bomso'
+    if 'kentinkrono' in a or 'kentikrono' in a: return 'Kentinkrono'
+    if 'ahinsan' in a: return 'Ahinsan'
+    if 'oduom' in a: return 'Oduom'
+    return (a.title() or 'Around KNUST')
+
+def _in_clean(name):
+    nm = norm(name)
+    if len(nm) < 3: return True  # too short to safely add
+    for r in clean:
+        hn = norm(r['name'])
+        if hn == nm or (len(nm) >= 4 and (nm in hn or hn in nm)): return True
+    return False
+
+mp_added = 0
+_alias_lc = set(ALIAS)
+for m in MP:
+    if m['name'].lower() in _alias_lc: continue
+    if _in_clean(m['name']): continue
+    ar = _area_norm(m['area'])
+    clean.append({
+        'name': m['name'], 'area': ar, 'category': 'Hostel',
+        'km_from_knust': None, 'lat': None, 'lng': None,
+        'maps_url': 'https://www.google.com/maps/search/?api=1&query=' + urllib.parse.quote(m['name'] + ' hostel KNUST Kumasi'),
+        'website': '', 'rating': None, 'reviews': 0, 'coord_reliable': False, 'closed': False,
+        'phone': m['phone'], 'manager_phone': m['phone'], 'confirmed': True,
+        'images': [], 'amenities': [], 'review_tags': [], 'colleges': colleges_for(ar),
+        'price_from': None, 'rooms': [], 'price_src': '', 'added_from': 'mp_list',
+    })
+    mp_added += 1
+print('MP-only hostels added (not in mapped set):', mp_added)
 
 clean.sort(key=lambda r: (r['area'], -1 if r['confirmed'] else 0, -(r['rating'] or 0)))
 
@@ -132,7 +199,7 @@ meta = {
     'area_counts': dict(Counter(r['area'] for r in clean).most_common()),
     'colleges': list(COLLEGE_AREAS.keys()),
     'amenities': [a for a,_ in sorted(amen_universe.items(), key=lambda x:-x[1])],
-    'confirmed': matched,
+    'confirmed': sum(1 for r in clean if r['confirmed']),
     'with_images': sum(1 for r in clean if r['images']),
     'with_amenities': sum(1 for r in clean if r['amenities']),
     'with_phone': sum(1 for r in clean if r['phone']),
@@ -145,10 +212,12 @@ with open(os.path.join(OUT,'data.js'),'w',encoding='utf-8') as f:
 
 with open(os.path.join(OUT,'knust_hostels.csv'),'w',newline='',encoding='utf-8-sig') as f:
     w=csv.writer(f)
-    w.writerow(['Name','Area','Category','Distance_km','Rating','Reviews','Phone','Confirmed_Contact',
-                'Amenities','Colleges_nearby','Website','Latitude','Longitude','Google_Maps_URL','Image'])
+    w.writerow(['Name','Area','Category','Distance_km','Rating','Reviews','Price_from_GHS','Price_source',
+                'Phone','Confirmed_Contact','Amenities','Colleges_nearby','Website','Latitude','Longitude',
+                'Google_Maps_URL','Image'])
     for r in clean:
         w.writerow([r['name'],r['area'],r['category'],r['km_from_knust'],r['rating'] or '',r['reviews'],
+                    r['price_from'] or '',r['price_src'] or '',
                     r['phone'],'yes' if r['confirmed'] else '',' | '.join(r['amenities']),
                     ' | '.join(r['colleges']),r['website'],r['lat'],r['lng'],r['maps_url'],
                     r['images'][0] if r['images'] else ''])
@@ -156,6 +225,7 @@ with open(os.path.join(OUT,'knust_hostels.csv'),'w',newline='',encoding='utf-8-s
 print('total:',meta['total'])
 print('confirmed contacts matched:',matched,'of',len(managers),'manager rows')
 print('with images:',meta['with_images'],'| with amenities:',meta['with_amenities'])
+print('with price:',meta['with_price'],' (getrooms exact-name matches:',sum(1 for r in clean if r['name'] in GETROOMS and r['price_from']),')')
 print('amenity universe:',meta['amenities'])
 print('unmatched managers (sample):')
 matched_names={match_manager(r['name'])['raw'] for r in tight if match_manager(r['name'])}
