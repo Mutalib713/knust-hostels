@@ -149,7 +149,7 @@
   .tickbig{display:inline-flex;align-items:center;gap:5px;background:var(--ok);color:#fff;border-radius:999px;font-size:12px;font-weight:600;padding:4px 10px}
   .mdisc{margin-top:18px;font-size:12px;color:var(--warn);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 12px}
   .lb{position:fixed;inset:0;background:rgba(8,12,22,.93);z-index:200;display:none;align-items:center;justify-content:center}
-  .lb.open{display:flex}.lb img{max-width:92vw;max-height:86vh;border-radius:10px}
+  .lb.open{display:flex}.lb img{max-width:92vw;max-height:86vh;border-radius:10px;transition:opacity .18s ease;touch-action:pan-y}
   .lb button{position:absolute;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;width:50px;height:50px;border-radius:50%;font-size:24px;cursor:pointer}
   .lb .prev{left:20px}.lb .next{right:20px}.lb .close{top:20px;right:20px;width:42px;height:42px}
 
@@ -188,7 +188,7 @@
   @media(max-width:820px){.kpis{grid-template-columns:repeat(3,1fr)}.dgrid{grid-template-columns:1fr}.dside{position:static}}
   @media(max-width:560px){
     .wrap{padding:0 13px}
-    .searchrow{flex-wrap:wrap}.searchbox{flex:1 1 100%}#area,.fbtn{flex:1 1 46%}
+    .searchrow{flex-wrap:nowrap;gap:6px}.searchbox{flex:1 1 0;min-width:0}#q{padding:0 10px 0 38px;font-size:15px}.searchbox svg{left:11px}#area{flex:0 1 auto;max-width:33vw;min-width:0;padding:0 6px;font-size:13px}.fbtn{flex:0 0 auto;padding:0 11px}
     .kpis{grid-template-columns:repeat(2,1fr);gap:9px}.kpi .n{font-size:21px}.kpi .l{font-size:11.5px}
     #map{height:300px}.grid{grid-template-columns:1fr;gap:13px}
     .hero h1{font-size:23px}.gal{grid-template-columns:1fr 1fr}.dbody{padding:16px}.dmain h2{font-size:21px}
@@ -203,7 +203,7 @@
     <div class="brand"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span>
       <div>KNUST Hostels Directory<small>Find a hostel near your college</small></div></div>
     <div class="row">
-      <button class="iconbtn" id="csvBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>
+      <button class="iconbtn" id="csvBtn" title="Download the hostels currently shown as a CSV spreadsheet — name, area, distance to campus, price, rating, phone &amp; Google Maps link. Opens in Excel or Google Sheets." aria-label="Download results as CSV spreadsheet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>
       <button class="iconbtn" id="themeBtn" aria-label="Dark mode"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
   </div>
@@ -448,11 +448,25 @@
   document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
   document.getElementById('grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openModal(H[+c.dataset.id]);});
 
-  // lightbox
-  function lbOpen(i){lbI=i;document.getElementById('lbimg').src=lbImgs[i];document.getElementById('lb').classList.add('open');}
+  // lightbox — preload neighbours + fade so switching is instant (no double-tap), swipe on touch
+  const lbBig=u=>u?u.replace(/=w\d+-h\d+/,'=w1280-h960'):u;
+  function lbShow(){
+    const im=document.getElementById('lbimg'),url=lbBig(lbImgs[lbI]);
+    im.style.opacity='.3';
+    const pre=new Image();pre.referrerPolicy='no-referrer';
+    pre.onload=()=>{im.src=url;im.style.opacity='1';};
+    pre.onerror=()=>{im.src=lbImgs[lbI];im.style.opacity='1';};
+    pre.src=url;
+    if(lbImgs.length>1)[1,-1].forEach(d=>{const n=(lbI+d+lbImgs.length)%lbImgs.length;const pi=new Image();pi.referrerPolicy='no-referrer';pi.src=lbBig(lbImgs[n]);}); // warm neighbours
+  }
+  function lbOpen(i){lbI=i;document.getElementById('lb').classList.add('open');lbShow();}
   window.lbClose=()=>document.getElementById('lb').classList.remove('open');
-  window.lbStep=d=>{lbI=(lbI+d+lbImgs.length)%lbImgs.length;document.getElementById('lbimg').src=lbImgs[lbI];};
-  document.getElementById('lb').addEventListener('click',e=>{if(e.target.id==='lb')lbClose();});
+  window.lbStep=d=>{if(lbImgs.length<2)return;lbI=(lbI+d+lbImgs.length)%lbImgs.length;lbShow();};
+  const lbEl=document.getElementById('lb');
+  lbEl.addEventListener('click',e=>{if(e.target.id==='lb')lbClose();});
+  let _sx=0,_sy=0,_st=0;
+  lbEl.addEventListener('touchstart',e=>{const t=e.changedTouches[0];_sx=t.clientX;_sy=t.clientY;_st=Date.now();},{passive:true});
+  lbEl.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-_sx,dy=t.clientY-_sy;if(Date.now()-_st<700&&Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.4)lbStep(dx<0?1:-1);},{passive:true});
   document.addEventListener('keydown',e=>{if(document.getElementById('lb').classList.contains('open')){if(e.key==='Escape')lbClose();if(e.key==='ArrowRight')lbStep(1);if(e.key==='ArrowLeft')lbStep(-1);}else if(e.key==='Escape')closeModal();});
 
   // search suggestions
