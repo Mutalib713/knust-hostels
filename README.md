@@ -1,84 +1,140 @@
-# KNUST Hostels Directory — 501 hostels on & around campus
+# KNUST Hostels Directory — 530+ hostels on & around campus
 
-A comprehensive, up-to-date dataset of hostels, halls, guest houses and student
+A comprehensive, searchable directory of hostels, halls, guest houses and student
 accommodation **on the KNUST campus and across the close student areas** of Kumasi —
-each grouped by its **real location** and pinned to its **exact Google Maps spot**.
+each grouped by its **real location**, pinned to its **exact map spot**, and (where
+available) tagged with **photos, amenities, confirmed manager contacts and prices**.
 
-**Generated:** 2026-06-26 · **Total:** 501 places (on campus + within ~6 km) · **46 on campus + 16 in Gaza**.
+### 🌐 Live: **https://mutalib713.github.io/knust-hostels/**
+
+> Independent student project — **not affiliated with KNUST**. Always **visit and verify**
+> a room (and its current price) before paying.
+
+---
+
+## At a glance
+
+| | |
+|---|---:|
+| **Total places** | **532** (on campus + within ~6 km) |
+| On campus / Gaza pocket | 46 / 18 |
+| **Confirmed manager contacts** (green tick) | **105** |
+| With a phone number | 322 |
+| With photos | 352 |
+| With published price ranges | 31 |
+| Map-pinned (lat/lng) | **532 (all)** |
+| Average Google rating | 3.99★ |
 
 ## What's in the dashboard
 
-Photos for ~352 hostels, **confirmed manager contacts** (green tick) from the SRC list,
-a getrooms-style **detail view** (photo gallery, amenities, student review themes, call/map/directions),
-filters by **college / area / type / amenities / confirmed-only / has-photo**, search-as-you-type
-**suggestions**, an interactive **map**, a **sticky search bar**, **mobile-responsive** layout,
-a **back-to-top** button, a safety **disclaimer**, and a "how freshers book" guide.
+- **Smart search & sort** — search-as-you-type suggestions, sort by **Most popular**
+  (default), distance, rating, reviews, price, confirmed-first or name.
+- **Filters** — by college, area, **type (with counts, e.g. "Hostel (355)")**, amenities,
+  confirmed-only and has-photo, with a one-tap **Reset all filters** and a live **"X found"** count.
+- **Detail view** — photo gallery (tap to open a full-screen viewer with **swipe** + arrows),
+  amenities, student review themes, **room-type price ranges**, and Call / Map / Directions buttons.
+- **Interactive map** with colour-coded pins by area (gracefully degrades to a list-only
+  view if offline).
+- **Prices** for 31 hostels (room-type ranges, e.g. *2-in-1 GHS 3,400–5,200*), sourced from getrooms.co.
+- **HostelHubb app promo** — for room **videos** and direct booking (Play Store / App Store).
+- **Mobile-first**, dark mode, sticky search, back-to-top, **CSV export**, and a safety disclaimer.
 
-> Prices aren't shown for most hostels because they aren't published online — call the manager for current fees.
+## How to book a hostel (in the app)
 
-## How to use
+Works for both **freshers** and **continuing students**:
 
-- **`index.html`** — open in any browser. Interactive dashboard with search, area/type
-  filters, sort, a live map (colour-coded pins), and per-hostel Google Maps + Directions +
-  Call buttons. Includes a "Download CSV" button. (Map tiles need internet; the list works offline.)
-- **`knust_hostels.csv`** — the full dataset for Excel / Google Sheets (UTF-8 BOM).
-- **`data.js` / `hostels_tight.json`** — the same data as JSON (used by the dashboard).
+1. **Official KNUST portals** — [KOSASS](https://kosass.knust.edu.gh/hostels) ·
+   [KOHS](https://kohs.knust.edu.gh/) · [GUSSS](https://gusss.knust.edu.gh/) (halls & approved hostels).
+2. **Search & shortlist** here by area, price, distance and college.
+3. **Call the manager** (green tick = contact we've confirmed).
+4. **Visit before paying** — inspect the room; avoid agents who add fees.
+5. **Book online** — [StudentRoomBook](https://studentroombook.com/) ·
+   [GH Hostels](https://ghhostels.com/) · [HostelGig](https://hostelgig.com/) · the **HostelHubb** app.
 
-## Columns
+## Files
 
-`Name, Area, Category, Distance_km_from_KNUST, Rating, Reviews, Phone, Website,
-Address, Latitude, Longitude, Google_Maps_URL, Location_Reliable, Closed`
+- **`index.html`** — the dashboard. Open in any browser (no build step). Map tiles need
+  internet; everything else works offline.
+- **`knust_hostels.csv`** — full dataset for Excel / Google Sheets (UTF-8 BOM).
+- **`data.js`** — the data the dashboard reads (`window.HOSTELS` + `window.META`).
+- **`hostels_tight.json`** — the mapped 501-hostel base set as JSON.
+- **`mp_contacts.json`** — Campus-MP / SRC manager contact list.
+- **`getrooms_prices.json`** — scraped room-type prices (exact-name matched).
+- **`mp_geocode.json`** — coordinates for the contact-only hostels.
+- **`enrich_build.py`** — builds `data.js` + the CSV from all of the above.
+
+## CSV columns
+
+`Name, Area, Category, Distance_km, Rating, Reviews, Price_from_GHS, Price_source,
+Phone, Confirmed_Contact, Amenities, Colleges_nearby, Website, Latitude, Longitude,
+Google_Maps_URL, Image`
 
 ## Coverage by area
 
 | Area | Count |  | Area | Count |
 |------|------:|--|------|------:|
-| **On Campus (KNUST)** | **46** | | Oforikrom | 15 |
-| **Gaza** | **16** | | Ayigya | 13 |
-| Kotei | 134 | | Oduom | 12 |
-| Ayeduase | 117 | | Anwomaso | 11 |
-| Boadi | 47 | | Anloga Junction | 9 |
-| Bomso | 21 | | Gyinyase | 8 |
+| Kotei | 141 | | Ayigya | 13 |
+| Ayeduase | 138 | | Oduom | 12 |
+| Boadi | 47 | | Anwomaso | 11 |
+| **On Campus (KNUST)** | **46** | | Anloga Junction | 9 |
+| Bomso | 22 | | Gyinyase | 8 |
 | Deduako | 19 | | Emena | 7 |
-| Kentinkrono | 15 | | Appiadu / Susuanso | 11 |
+| **Gaza** | **18** | | Appiadu | 6 |
+| Kentinkrono | 15 | | Susuanso (campus edge) | 5 |
+| Oforikrom | 15 | | | |
 
-**On-campus group (46)** = traditional halls (University/Katanga, Unity, Republic, Queens,
-Africa, Independence, Chancellor's/Hall 7 "Brunei") **and** private hostels built on KNUST land —
-e.g. Spring, Shaba, Steven Paris, Transport, R-TEP, TEK Credit, GUSSS, Graduate Students' Hostel,
-plus on-campus guest houses.
+**On-campus group (46)** = traditional halls (University/Katanga, Unity, Republic, Queen's,
+Africa, Independence, Chancellor's/Hall 7) **and** private hostels on KNUST land (Spring, Shaba,
+Steven Paris, Transport, R-TEP, TEK Credit, GUSSS, Graduate Students' Hostel, on-campus guest houses).
 
-**Gaza group (16)** = the dense, slightly-off-campus hostel pocket NE of campus — Gaza Hostel,
-ADEPA, Anglican, the African-capital "Courts" (Libreville, Kinshasa, N'Djamena), Georgia, Crystal
-Rose, Sun City, Viable, JF, Banivillas, Wilkado, etc.
+**Gaza group (18)** = the dense, slightly-off-campus hostel pocket NE of campus — Gaza/Ghana
+Hostels, ADEPA, Anglican, the African-capital "Courts" (Libreville, Kinshasa, N'Djamena),
+Georgia, Crystal Rose, Sun City, Banivillas, etc.
 
-## Methodology
+## How it's built
 
-1. **Apify Google Maps Scraper** (`compass/crawler-google-places`), two runs — the decisive one
-   used a **coordinate-bounded polygon** around the KNUST belt (datasets `TUDHF1zrlFPYtrahU`, `2R7egZ1ofFv9s7bWv`).
-2. **Merge & dedupe** by Google place ID + name/proximity (677 raw → 581 accommodation).
-3. **Accurate area grouping (two signals):**
-   - **On-campus** is decided by **point-in-polygon against the real KNUST campus boundary**
-     fetched from OpenStreetMap (Overpass) — see `campus_boundary.py` → `campus_rings_kumasi.json`.
-   - **Off-campus** areas come from **reverse-geocoding each coordinate** to its OSM suburb
-     (`reverse_geocode.py` → `geo_cache.json`).
-4. **Tightened for students** — kept only on-campus + recognised close suburbs (Kotei, Ayeduase,
-   Bomso, Boadi, Kentinkrono, Ayigya, Deduako, Oduom, Appiadu, Gyinyase, Anwomaso, Emena, Anloga,
-   Oforikrom, Susuanso) within ~6 km. **80 central/outer-Kumasi places were dropped** (Adum, Bantama,
-   Asokwa, Asafo, Nhyiaeso, Adiebeba, …).
-5. **Cross-checked** against KNUST directories / web (KOSASS, GetRooms, HostelGig, Knustnoticeboard, TikTok).
+**Layer 1 — the mapped base (501).** Built from an **Apify Google Maps** scrape
+(`compass/crawler-google-places`) using a **coordinate-bounded polygon** around the KNUST
+belt, then merged/deduped by place ID. Area grouping uses **two signals**: on-campus by
+**point-in-polygon** against the real KNUST boundary (OpenStreetMap/Overpass), and off-campus
+by **reverse-geocoding** each coordinate to its OSM suburb. Tightened to on-campus + close
+student suburbs within ~6 km. (`merge_clean.py` → `reverse_geocode.py` → `campus_boundary.py`
+→ `analyze_campus.py` → `classify_and_build.py`.)
+
+**Layer 2 — enrichment (`enrich_build.py`).**
+- **Photos & amenities** from a fuller Apify detail run.
+- **Confirmed contacts** matched from the SRC list and the **Campus-MP poster** (`mp_contacts.json`).
+  **31 hostels on those lists weren't in the Google-Maps set** (Amen Annex/Inn, Frontline
+  Apartment/Court, Jita 1 & 2, JNS, Pii, Ceros, …) and are appended as **contact-only entries**,
+  then **forward-geocoded** (Nominatim by name, area-centroid fallback → `mp_geocode.json`) so they
+  also get map pins. This brings the total to **532** and confirmed contacts to **105**.
+- **Prices** scraped from **getrooms.co** (browser crawl; only ~23 of its KNUST listings publish
+  real figures) plus a few from studentroombook.com — exact-name matched, written to `getrooms_prices.json`.
 
 ## Data-quality notes
 
-- ~25 places had a Google area-level fallback pin (flagged `Location_Reliable = approx`) —
+- All 532 places are map-pinned; ~25 of the original set use a Google area-level fallback pin —
   use the Maps link to confirm the exact spot. Distances are straight-line from campus centre.
-- ~270 have a phone number; ~485 are GPS-verified; avg rating 3.99★.
-- Reference data — verify current room availability and prices directly with each hostel.
+- Contact-only entries (the 31 added from the MP/SRC lists) have a confirmed phone but no rating,
+  photos or website yet, and their pin is an area-level estimate.
+- **Prices and availability change** — confirm directly with each hostel before paying.
 
 ## Reproduce / refresh
 
 ```bash
-python merge_clean.py        # rebuild from raw Apify pulls (581 accommodation)
-python reverse_geocode.py    # reverse-geocode coords -> geo_cache.json (~11 min, rate-limited)
-python campus_boundary.py    # fetch KNUST boundary; then: python analyze_campus.py  (-> campus_rings_kumasi.json)
-python classify_and_build.py # campus point-in-polygon + suburb areas + tighten -> CSV + data.js
+# Layer 1 (only when re-scraping Google Maps):
+python merge_clean.py && python reverse_geocode.py && python campus_boundary.py \
+  && python analyze_campus.py && python classify_and_build.py
+
+# Layer 2 (rebuild data.js + CSV from the enrichment sources):
+python enrich_build.py
 ```
+
+## Deploy
+
+Hosted on **GitHub Pages** (branch `main`, root). It rebuilds automatically on every push —
+so to update the live site, just commit and `git push`.
+
+---
+
+*Styled with a blue (#1E40AF) + amber (#F59E0B) palette, Fira Sans / Fira Code.*
