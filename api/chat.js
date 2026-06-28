@@ -78,8 +78,12 @@ export default async function handler(req, res) {
     { ...base, thinkingConfig: { thinkingBudget: thinkingLevel === "minimal" ? 0 : 512 } },  // Gemini 2.5
     base,                                                                                     // none
   ];
-  const callGemini = (m, genConfig) =>
-    fetch(endpoint(m), {
+  // Each call gets an abort timeout so a hanging/overloaded model can't stall the chat —
+  // when it fires we move straight to the fallback instead of waiting.
+  const callGemini = (m, genConfig, timeoutMs) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    return fetch(endpoint(m), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -87,42 +91,52 @@ export default async function handler(req, res) {
         contents,
         generationConfig: genConfig,
       }),
-    });
+      signal: ctrl.signal,
+    }).finally(() => clearTimeout(timer));
+  };
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  // 503/429/500 or an "overloaded / high demand" body = temporary; worth a retry / fallback.
+  // 503/429/500 or an "overloaded / high demand" body = temporary; fall back / retry.
   const isOverloaded = (status, body) =>
     status === 503 || status === 429 || status === 500 || /UNAVAILABLE|overload|high demand/i.test(body || "");
 
   // Run the thinking-config cascade for one model. Returns { res } — plus { body } when the
   // body was already consumed to inspect a 400 (so the caller doesn't re-read the stream).
-  async function tryModel(m) {
-    let r = await callGemini(m, genConfigs[0]);
+  async function tryModel(m, timeoutMs) {
+    let r = await callGemini(m, genConfigs[0], timeoutMs);
     let i = 1;
     while (r.status === 400 && i < genConfigs.length) {
       const t = await r.text();
       if (!/thinking/i.test(t)) return { res: r, body: t }; // genuine 400, not the thinking field
-      r = await callGemini(m, genConfigs[i++]);
+      r = await callGemini(m, genConfigs[i++], timeoutMs);
     }
     return { res: r };
   }
 
+  // Fail fast on the (often overloaded) primary, then give the stabler fallback more room
+  // plus one retry. Primary timeout tunable via GEMINI_TIMEOUT_MS.
+  const primaryTimeout = Number(process.env.GEMINI_TIMEOUT_MS) || 4500;
+  const plan = models.map((m, idx) => {
+    const isLast = idx === models.length - 1;
+    return { m, timeoutMs: isLast ? Math.max(primaryTimeout, 12000) : primaryTimeout, retries: isLast ? 2 : 1 };
+  });
+
   let data;
   let lastErr = { status: 502, detail: "no response" };
-  outer: for (const m of models) {
-    for (let retry = 0; retry < 2; retry++) {
+  outer: for (const { m, timeoutMs, retries } of plan) {
+    for (let attempt = 0; attempt < retries; attempt++) {
       let r;
       try {
-        r = await tryModel(m);
+        r = await tryModel(m, timeoutMs);
       } catch {
-        lastErr = { status: 502, detail: "Could not reach Gemini" };
+        lastErr = { status: 502, detail: `timeout or network error (${m})` }; // aborted/network → transient
       }
       if (r) {
         if (r.res.ok) { data = await r.res.json(); break outer; }
         const detail = (r.body ?? (await r.res.text())).slice(0, 300);
         lastErr = { status: r.res.status, detail };
-        if (!isOverloaded(r.res.status, detail)) break; // non-transient error → try next model
+        if (!isOverloaded(r.res.status, detail)) break; // genuine error → try next model
       }
-      if (retry === 0) await sleep(500); // brief pause, then one quick retry on this model
+      if (attempt < retries - 1) await sleep(400); // only the fallback model retries
     }
   }
 
