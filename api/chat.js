@@ -7,7 +7,7 @@
  *
  * Endpoint:  /api/chat   (same origin as the site → no CORS needed)
  * Required env var:  GEMINI_KEY      (Vercel → Project → Settings → Environment Variables)
- * Optional env vars: GEMINI_MODEL    (defaults to gemini-2.0-flash)
+ * Optional env vars: GEMINI_MODEL    (defaults to gemini-3.5-flash)
  *                    THINKING_LEVEL  (defaults to minimal)
  *
  * Ported from the old Cloudflare Worker (worker/worker.js).
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   const context = `Available hostels (JSON):\n${JSON.stringify(hostels)}`;
   contents.push({ role: "user", parts: [{ text: `${context}\n\nUser question: ${message}` }] });
 
-  const model = (process.env.GEMINI_MODEL || "gemini-2.0-flash").trim().replace(/^models\//, "");
+  const model = (process.env.GEMINI_MODEL || "gemini-3.5-flash").trim().replace(/^models\//, "");
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_KEY}`;
 
   // Thinking effort — Gemini 3 uses thinking_level, Gemini 2.5 uses thinkingBudget.
