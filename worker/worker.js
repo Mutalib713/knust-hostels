@@ -76,12 +76,16 @@ export default {
 
     const model = (env.GEMINI_MODEL || "gemini-2.0-flash").trim().replace(/^models\//, "");
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
+    // Turn OFF "thinking" on 2.5 models so the whole token budget goes to the
+    // visible answer (thinking models otherwise spend it reasoning and truncate
+    // the reply). Harmless on non-thinking models like gemini-2.0-flash.
+    const generationConfig = { temperature: 0.4, maxOutputTokens: 1024 };
+    if (/2\.5|thinking/i.test(model)) generationConfig.thinkingConfig = { thinkingBudget: 0 };
+
     const payload = {
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents,
-      // 2048 leaves room for the answer even on "thinking" models (gemini-2.5-flash),
-      // which spend part of the budget reasoning before they reply.
-      generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+      generationConfig,
     };
 
     let res;
