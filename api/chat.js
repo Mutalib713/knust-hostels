@@ -8,7 +8,7 @@
  * Endpoint:  /api/chat   (same origin as the site → no CORS needed)
  * Required env var:  GEMINI_KEY      (Vercel → Project → Settings → Environment Variables)
  * Optional env vars: GEMINI_MODEL           (primary, defaults to gemini-3.5-flash)
- *                    GEMINI_FALLBACK_MODEL  (used when primary is overloaded, defaults to gemini-2.0-flash)
+ *                    GEMINI_FALLBACK_MODEL  (used when primary is overloaded, defaults to gemini-3.1-flash-lite)
  *                    THINKING_LEVEL         (defaults to minimal)
  *
  * Ported from the old Cloudflare Worker (worker/worker.js).
@@ -60,10 +60,11 @@ export default async function handler(req, res) {
 
   // Models tried in order: primary first, then a stabler fallback. Google's free tier
   // returns 503 "high demand" for hot new models like gemini-3.5-flash, so we retry the
-  // transient overload once, then drop to gemini-2.0-flash so students always get a reply.
+  // transient overload, then drop to the faster, higher-quota gemini-3.1-flash-lite so
+  // students always get a reply (and finally the page's offline search if both are down).
   const clean = (m) => m.trim().replace(/^models\//, "");
   const primary = clean(process.env.GEMINI_MODEL || "gemini-3.5-flash");
-  const fallback = clean(process.env.GEMINI_FALLBACK_MODEL || "gemini-2.0-flash");
+  const fallback = clean(process.env.GEMINI_FALLBACK_MODEL || "gemini-3.1-flash-lite");
   const models = primary === fallback ? [primary] : [primary, fallback];
   const endpoint = (m) =>
     `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${process.env.GEMINI_KEY}`;
