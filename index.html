@@ -568,6 +568,8 @@
     const tab=document.getElementById('cbTab'),panel=document.getElementById('cbPanel'),body=document.getElementById('cbBody'),
           chipsEl=document.getElementById('cbChips'),form=document.getElementById('cbForm'),input=document.getElementById('cbInput'),closeBtn=document.getElementById('cbClose');
     if(!tab) return;
+    const WORKER_URL=""; /* ← paste your Cloudflare Worker URL here to enable Gemini AI replies; empty = offline keyword search */
+    let hist=[];
     const nrm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
     const callSvg='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
     const tkSvg='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -664,7 +666,25 @@
     }
     function addMsg(role,html){const m=document.createElement('div');m.className='cbmsg '+role;m.innerHTML=(role==='bot'?'<div class="cbmava" aria-hidden="true">A</div>':'')+'<div class="cbbubble">'+html+'</div>';body.appendChild(m);body.scrollTop=body.scrollHeight;return m;}
     function typing(){const m=document.createElement('div');m.className='cbmsg bot';m.innerHTML='<div class="cbmava" aria-hidden="true">A</div><div class="cbbubble"><div class="cbtyping"><span></span><span></span><span></span></div></div>';body.appendChild(m);body.scrollTop=body.scrollHeight;return m;}
-    function respond(q){addMsg('user',esc(q));const tp=typing();setTimeout(()=>{tp.remove();const a=answer(q);let html='<p>'+a.text+'</p>';if(a.cards&&a.cards.length)html+='<div class="cbcards">'+a.cards.map(cardHTML).join('')+'</div>';addMsg('bot',html);},460);}
+    function localReply(q){const a=answer(q);let html='<p>'+a.text+'</p>';if(a.cards&&a.cards.length)html+='<div class="cbcards">'+a.cards.map(cardHTML).join('')+'</div>';return html;}
+    async function respond(q){
+      addMsg('user',esc(q));const tp=typing();
+      const a=answer(q);
+      const cands=(a.cards&&a.cards.length)?a.cards:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12);
+      if(WORKER_URL){
+        try{
+          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone}));
+          const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-6),hostels:compact})});
+          if(!res.ok)throw 0;const d=await res.json();const reply=(d.reply||'').trim();if(!reply)throw 0;
+          tp.remove();
+          hist.push({role:'user',text:q},{role:'model',text:reply});if(hist.length>10)hist=hist.slice(-10);
+          let html='<p>'+esc(reply).replace(/\n/g,'<br>')+'</p>';
+          if(cands.length)html+='<div class="cbcards">'+cands.slice(0,5).map(cardHTML).join('')+'</div>';
+          addMsg('bot',html);return;
+        }catch(e){/* network/Gemini failed → fall back to offline reply */}
+      }
+      setTimeout(()=>{tp.remove();addMsg('bot',localReply(q));},WORKER_URL?0:460);
+    }
     const CHIPS=['Cheapest in Ayeduase','Confirmed contacts near campus','Hostels for Engineering','With photos under 4000','Best rated in Kotei','Gaza under 3000'];
     chipsEl.innerHTML=CHIPS.map(c=>'<button type="button" class="cbchip">'+c+'</button>').join('');
     chipsEl.addEventListener('click',e=>{const b=e.target.closest('.cbchip');if(b)respond(b.textContent);});

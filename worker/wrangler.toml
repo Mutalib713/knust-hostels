@@ -1,0 +1,10 @@
+name = "knust-hostel-ai"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Your Gemini API key is NOT stored here. Set it as an encrypted secret:
+#   wrangler secret put GEMINI_KEY
+#
+# Optional: pin a model (defaults to gemini-2.0-flash inside worker.js)
+# [vars]
+# GEMINI_MODEL = "gemini-2.0-flash"
