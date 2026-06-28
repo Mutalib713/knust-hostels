@@ -8,7 +8,9 @@
  * Deploy two ways (see worker/README.md): paste this file into the Cloudflare
  * dashboard (easiest, no install), or run `wrangler deploy`.
  * Secret needed:  GEMINI_KEY   (dashboard: Settings → Variables → add secret)
- * Optional var:   GEMINI_MODEL (defaults to gemini-2.5-flash)
+ * Optional var:   GEMINI_MODEL (defaults to gemini-2.0-flash — answers directly.
+ *                 gemini-2.5-flash also works but "thinks" first, which can eat
+ *                 the reply's token budget unless you raise maxOutputTokens a lot.)
  */
 
 // Origins allowed to call this Worker. Add your own if you rename the repo.
@@ -72,12 +74,12 @@ export default {
     const context = `Available hostels (JSON):\n${JSON.stringify(hostels)}`;
     contents.push({ role: "user", parts: [{ text: `${context}\n\nUser question: ${message}` }] });
 
-    const model = env.GEMINI_MODEL || "gemini-2.5-flash";
+    const model = env.GEMINI_MODEL || "gemini-2.0-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
     const payload = {
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 320 },
+      generationConfig: { temperature: 0.4, maxOutputTokens: 500 },
     };
 
     let res;

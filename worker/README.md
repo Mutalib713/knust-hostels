@@ -81,9 +81,11 @@ You should get back `{"reply":"..."}`.
 - **Request/response shape** (what the page and Worker agree on): page POSTs
   `{ message, history, hostels }`; Worker returns `{ reply }`. Keep these in
   sync if you edit either side.
-- **Model:** defaults to `gemini-2.5-flash`. If Google changes the free flash
-  model name, set `GEMINI_MODEL` (dashboard variable, or `[vars]` in
-  `wrangler.toml`), or check https://aistudio.google.com.
+- **Model:** defaults to `gemini-2.0-flash`, which answers directly. You can
+  override it with a `GEMINI_MODEL` variable (dashboard, or `[vars]` in
+  `wrangler.toml`). Note: `gemini-2.5-flash` "thinks" before replying, which
+  eats the output-token budget and can truncate answers — if you use it, raise
+  `maxOutputTokens` in `worker.js` to ~1500.
 - **CORS:** `worker.js` allows `https://mutalib713.github.io` and
   `localhost:8131`. If you fork/rename, edit `ALLOWED_ORIGINS` in `worker.js`.
 - **Free tiers (verify current numbers):** Gemini Flash ≈ 15 req/min, ~1,000/day;
