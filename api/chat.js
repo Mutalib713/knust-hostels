@@ -7,8 +7,9 @@
  *
  * Endpoint:  /api/chat   (same origin as the site → no CORS needed)
  * Required env var:  GEMINI_KEY      (Vercel → Project → Settings → Environment Variables)
- * Optional env vars: GEMINI_MODEL    (defaults to gemini-3.5-flash)
- *                    THINKING_LEVEL  (defaults to minimal)
+ * Optional env vars: GEMINI_MODEL           (primary, defaults to gemini-3.5-flash)
+ *                    GEMINI_FALLBACK_MODEL  (used when primary is overloaded, defaults to gemini-2.0-flash)
+ *                    THINKING_LEVEL         (defaults to minimal)
  *
  * Ported from the old Cloudflare Worker (worker/worker.js).
  */
@@ -57,21 +58,28 @@ export default async function handler(req, res) {
   const context = `Available hostels (JSON):\n${JSON.stringify(hostels)}`;
   contents.push({ role: "user", parts: [{ text: `${context}\n\nUser question: ${message}` }] });
 
-  const model = (process.env.GEMINI_MODEL || "gemini-3.5-flash").trim().replace(/^models\//, "");
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_KEY}`;
+  // Models tried in order: primary first, then a stabler fallback. Google's free tier
+  // returns 503 "high demand" for hot new models like gemini-3.5-flash, so we retry the
+  // transient overload once, then drop to gemini-2.0-flash so students always get a reply.
+  const clean = (m) => m.trim().replace(/^models\//, "");
+  const primary = clean(process.env.GEMINI_MODEL || "gemini-3.5-flash");
+  const fallback = clean(process.env.GEMINI_FALLBACK_MODEL || "gemini-2.0-flash");
+  const models = primary === fallback ? [primary] : [primary, fallback];
+  const endpoint = (m) =>
+    `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${process.env.GEMINI_KEY}`;
 
-  // Thinking effort — Gemini 3 uses thinking_level, Gemini 2.5 uses thinkingBudget.
-  // Try the v3 form, fall back to v2.5, then to no thinking control, retrying ONLY
-  // when the model rejects the field. minimal ≈ near-instant (data is pre-filtered).
+  // Thinking effort — Gemini 3 uses thinking_level, Gemini 2.5 uses thinkingBudget, older
+  // flash models take neither. Try the v3 form, fall back to v2.5, then to none, retrying
+  // ONLY when the model rejects the field. minimal ≈ near-instant (data is pre-filtered).
   const thinkingLevel = (process.env.THINKING_LEVEL || "minimal").trim();
   const base = { temperature: 0.4, maxOutputTokens: 2048 };
-  const attempts = [
+  const genConfigs = [
     { ...base, thinkingConfig: { thinking_level: thinkingLevel } },                          // Gemini 3
     { ...base, thinkingConfig: { thinkingBudget: thinkingLevel === "minimal" ? 0 : 512 } },  // Gemini 2.5
     base,                                                                                     // none
   ];
-  const callGemini = (genConfig) =>
-    fetch(url, {
+  const callGemini = (m, genConfig) =>
+    fetch(endpoint(m), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -80,25 +88,48 @@ export default async function handler(req, res) {
         generationConfig: genConfig,
       }),
     });
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  // 503/429/500 or an "overloaded / high demand" body = temporary; worth a retry / fallback.
+  const isOverloaded = (status, body) =>
+    status === 503 || status === 429 || status === 500 || /UNAVAILABLE|overload|high demand/i.test(body || "");
 
-  let geminiRes;
-  try {
-    geminiRes = await callGemini(attempts[0]);
+  // Run the thinking-config cascade for one model. Returns { res } — plus { body } when the
+  // body was already consumed to inspect a 400 (so the caller doesn't re-read the stream).
+  async function tryModel(m) {
+    let r = await callGemini(m, genConfigs[0]);
     let i = 1;
-    while (geminiRes.status === 400 && i < attempts.length) {
-      const t = await geminiRes.text();
-      if (!/thinking/i.test(t)) return res.status(502).json({ error: "Gemini 400", detail: t.slice(0, 300) });
-      geminiRes = await callGemini(attempts[i++]); // model rejected the thinking field — try the next form
+    while (r.status === 400 && i < genConfigs.length) {
+      const t = await r.text();
+      if (!/thinking/i.test(t)) return { res: r, body: t }; // genuine 400, not the thinking field
+      r = await callGemini(m, genConfigs[i++]);
     }
-  } catch (e) {
-    return res.status(502).json({ error: "Could not reach Gemini" });
-  }
-  if (!geminiRes.ok) {
-    const detail = (await geminiRes.text()).slice(0, 300);
-    return res.status(502).json({ error: `Gemini ${geminiRes.status}`, detail });
+    return { res: r };
   }
 
-  const data = await geminiRes.json();
+  let data;
+  let lastErr = { status: 502, detail: "no response" };
+  outer: for (const m of models) {
+    for (let retry = 0; retry < 2; retry++) {
+      let r;
+      try {
+        r = await tryModel(m);
+      } catch {
+        lastErr = { status: 502, detail: "Could not reach Gemini" };
+      }
+      if (r) {
+        if (r.res.ok) { data = await r.res.json(); break outer; }
+        const detail = (r.body ?? (await r.res.text())).slice(0, 300);
+        lastErr = { status: r.res.status, detail };
+        if (!isOverloaded(r.res.status, detail)) break; // non-transient error → try next model
+      }
+      if (retry === 0) await sleep(500); // brief pause, then one quick retry on this model
+    }
+  }
+
+  if (!data) {
+    return res.status(502).json({ error: `Gemini ${lastErr.status}`, detail: lastErr.detail });
+  }
+
   const reply = (data?.candidates?.[0]?.content?.parts || [])
     .filter((p) => !p.thought)            // never surface internal reasoning, only the final answer
     .map((p) => p.text || "")
