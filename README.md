@@ -38,6 +38,8 @@ available) tagged with **photos, amenities, confirmed manager contacts and price
 - **"Ask Ama" AI assistant** — a chat helper that answers questions like *"cheapest confirmed
   hostel in Ayeduase under 3000"*, grounded **only** in the real directory data (Google Gemini
   via a serverless function; falls back to offline keyword search if the AI is unavailable).
+- **Message the owner** — a "📩 Message owner" option in the chat to report a wrong number,
+  a closed/missing hostel or suggest a change — via WhatsApp or a quick in-chat form.
 - **Prices** for 31 hostels (room-type ranges, e.g. *2-in-1 GHS 3,400–5,200*), sourced from getrooms.co.
 - **HostelHubb app promo** — for room **videos** and direct booking (Play Store / App Store).
 - **Mobile-first**, dark mode, sticky search, back-to-top, **CSV export**, and a safety disclaimer.
