@@ -79,7 +79,9 @@ export default {
     const payload = {
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 500 },
+      // 2048 leaves room for the answer even on "thinking" models (gemini-2.5-flash),
+      // which spend part of the budget reasoning before they reply.
+      generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
     };
 
     let res;
