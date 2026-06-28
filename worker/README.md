@@ -16,71 +16,55 @@ The page sends Gemini **only the hostels it already filtered**, so answers stay 
 ## Step 1 — Get a free Gemini API key (2 min)
 
 1. Go to **https://aistudio.google.com/apikey** (sign in with any Google account).
-2. Click **Create API key** → copy it (looks like `AIza...`).
+2. Click **Create API key** → copy it (looks like `AIza...`). No billing required.
 
-Free tier is generous (plenty for a class/portfolio project). No billing required.
+## Step 2 — Deploy the Worker (pick ONE route)
 
-## Step 2 — Install the Cloudflare CLI
+### Route A — Cloudflare dashboard (easiest, no installs) ⭐
 
-You need **Node.js** (https://nodejs.org). Then, from this `worker/` folder:
+1. Go to **https://dash.cloudflare.com** → create a free account.
+2. **Workers & Pages → Create → Create Worker** → give it a name (e.g. `knust-hostel-ai`) → **Deploy**.
+3. Click **Edit code**, delete the sample, **paste the whole of `worker.js`**, then **Deploy**.
+4. **Settings → Variables and Secrets → Add → Secret**: name `GEMINI_KEY`, value = your `AIza...` key → **Save and deploy**.
+5. Copy the Worker URL at the top, e.g. `https://knust-hostel-ai.yourname.workers.dev`.
 
-```bash
-npm install -g wrangler      # or use: npx wrangler <command>
-wrangler login               # opens a browser → create a free Cloudflare account / log in
-```
+### Route B — Command line (wrangler)
 
-## Step 3 — Add your key as a secret (never committed)
-
-```bash
-cd worker
-wrangler secret put GEMINI_KEY
-# paste your AIza... key when prompted, press Enter
-```
-
-## Step 4 — Deploy
+Needs **Node.js** (https://nodejs.org). From this `worker/` folder:
 
 ```bash
-wrangler deploy
+npm install -g wrangler      # or prefix commands with: npx
+wrangler login               # opens a browser to create / log in (free)
+wrangler secret put GEMINI_KEY   # paste your AIza... key
+wrangler deploy                  # prints your Worker URL
 ```
 
-You'll get a URL like:
+Either way, open the URL in a browser — you should see `{"ok":true,"service":"knust-hostel-ai"}`.
 
-```
-https://knust-hostel-ai.<your-subdomain>.workers.dev
-```
-
-Open it in a browser — you should see `{"ok":true,"service":"knust-hostel-ai"}`.
-
-## Step 5 — Connect it to the site
+## Step 3 — Connect it to the site
 
 In **`index.html`**, find this line (inside the Ama script):
 
 ```js
-const WORKER_URL=""; // ← paste your Cloudflare Worker URL here to enable AI
+const WORKER_URL=""; // ← paste your Cloudflare Worker URL here to enable Gemini AI
 ```
 
-Paste your Worker URL between the quotes, e.g.:
+Paste your Worker URL between the quotes:
 
 ```js
 const WORKER_URL="https://knust-hostel-ai.yourname.workers.dev";
 ```
 
-Save, commit, push. **That's it — Ama now answers with Gemini.** If `WORKER_URL` is empty (or the Worker is unreachable), Ama automatically falls back to the built-in offline keyword search, so the site never breaks.
+Save, commit, push. **Ama now answers with Gemini.** If `WORKER_URL` is empty (or the Worker is unreachable), Ama automatically falls back to the built-in offline keyword search, so the site never breaks.
 
 ---
 
-## Test locally first (optional)
+## Test it quickly
+
+After deploying, from any terminal (matches the site's request shape):
 
 ```bash
-cd worker
-wrangler secret put GEMINI_KEY    # (only needed once)
-wrangler dev                       # runs at http://localhost:8787
-```
-
-Quick check from a terminal:
-
-```bash
-curl -X POST http://localhost:8787 \
+curl -X POST https://knust-hostel-ai.yourname.workers.dev \
   -H "Content-Type: application/json" \
   -d '{"message":"cheapest in Ayeduase with a confirmed contact",
        "hostels":[{"name":"Evandy Hostel","area":"Ayeduase","price":2700,"km":1.6,"rating":4.1,"confirmed":true,"phone":"0549678089"}]}'
@@ -88,12 +72,22 @@ curl -X POST http://localhost:8787 \
 
 You should get back `{"reply":"..."}`.
 
+(Route B only) run it locally with `wrangler dev` → `http://localhost:8787`.
+
 ---
 
 ## Notes & limits
 
-- **Model:** defaults to `gemini-2.0-flash`. If Google changes the free flash model, set `GEMINI_MODEL` in `wrangler.toml` (or check https://aistudio.google.com for the current one).
-- **CORS:** `worker.js` allows `https://mutalib713.github.io` and `localhost:8131`. If you fork/rename, edit `ALLOWED_ORIGINS` in `worker.js`.
-- **Free tiers (verify current numbers):** Gemini Flash ≈ 15 req/min, ~1,000/day; Cloudflare Workers ≈ 100,000 req/day. Comfortable for a student project.
-- **Cost ceiling:** if you ever exceed the Gemini free tier, Flash is extremely cheap; or swap the model in the Worker for Groq/Cloudflare Workers AI with the same shape.
-- **Upgrade to Claude later:** point the Worker at the Anthropic API instead (Claude Haiku ≈ $1/$5 per 1M tokens) — same browser code, just change the `fetch` in `worker.js`.
+- **Request/response shape** (what the page and Worker agree on): page POSTs
+  `{ message, history, hostels }`; Worker returns `{ reply }`. Keep these in
+  sync if you edit either side.
+- **Model:** defaults to `gemini-2.5-flash`. If Google changes the free flash
+  model name, set `GEMINI_MODEL` (dashboard variable, or `[vars]` in
+  `wrangler.toml`), or check https://aistudio.google.com.
+- **CORS:** `worker.js` allows `https://mutalib713.github.io` and
+  `localhost:8131`. If you fork/rename, edit `ALLOWED_ORIGINS` in `worker.js`.
+- **Free tiers (verify current numbers):** Gemini Flash ≈ 15 req/min, ~1,000/day;
+  Cloudflare Workers ≈ 100,000 req/day. Comfortable for a student project.
+- **Upgrade to Claude later:** point the Worker at the Anthropic API instead
+  (Claude Haiku ≈ $1/$5 per 1M tokens) — same browser code, just change the
+  `fetch` call in `worker.js`.

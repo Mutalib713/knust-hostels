@@ -5,9 +5,10 @@
  * answers chat requests from the directory, grounded ONLY on the hostels the
  * page sends it. Free on Cloudflare Workers + Google AI Studio free tier.
  *
- * Deploy: see worker/README.md
- * Secret needed:  GEMINI_KEY   (wrangler secret put GEMINI_KEY)
- * Optional var:   GEMINI_MODEL (defaults to gemini-2.0-flash)
+ * Deploy two ways (see worker/README.md): paste this file into the Cloudflare
+ * dashboard (easiest, no install), or run `wrangler deploy`.
+ * Secret needed:  GEMINI_KEY   (dashboard: Settings → Variables → add secret)
+ * Optional var:   GEMINI_MODEL (defaults to gemini-2.5-flash)
  */
 
 // Origins allowed to call this Worker. Add your own if you rename the repo.
@@ -71,7 +72,7 @@ export default {
     const context = `Available hostels (JSON):\n${JSON.stringify(hostels)}`;
     contents.push({ role: "user", parts: [{ text: `${context}\n\nUser question: ${message}` }] });
 
-    const model = env.GEMINI_MODEL || "gemini-2.0-flash";
+    const model = env.GEMINI_MODEL || "gemini-2.5-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
     const payload = {
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
