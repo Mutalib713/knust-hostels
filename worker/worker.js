@@ -74,7 +74,7 @@ export default {
     const context = `Available hostels (JSON):\n${JSON.stringify(hostels)}`;
     contents.push({ role: "user", parts: [{ text: `${context}\n\nUser question: ${message}` }] });
 
-    const model = env.GEMINI_MODEL || "gemini-2.0-flash";
+    const model = (env.GEMINI_MODEL || "gemini-2.0-flash").trim().replace(/^models\//, "");
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
     const payload = {
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
