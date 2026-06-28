@@ -100,6 +100,7 @@ export default async function handler(req, res) {
 
   const data = await geminiRes.json();
   const reply = (data?.candidates?.[0]?.content?.parts || [])
+    .filter((p) => !p.thought)            // never surface internal reasoning, only the final answer
     .map((p) => p.text || "")
     .join("")
     .trim();
