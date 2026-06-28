@@ -1,0 +1,27 @@
+# Files kept in the repo (for reproducibility) but NOT served on the live site.
+# The live dashboard only needs: index.html, data.js, hostelhubb-logo.jpg, api/, knust_hostels.csv
+
+# Build pipeline
+*.py
+__pycache__/
+
+# Old Cloudflare Worker (the AI now runs on api/chat.js) and an early prototype
+worker/
+hostel-detail-prototype.html
+
+# Intermediate / raw scrape data — the final data is baked into data.js
+hostels_final.json
+hostels_tight.json
+hostels_tierA.json
+hostels_far_kumasi.json
+geo_cache.json
+placeids.json
+campus_rings.json
+campus_rings_kumasi.json
+
+# Source contact / price lists (confirmed numbers already live in data.js)
+managers.json
+mp_contacts.json
+mp_geocode.json
+getrooms_prices.json
+prices.json

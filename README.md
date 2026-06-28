@@ -5,7 +5,7 @@ accommodation **on the KNUST campus and across the close student areas** of Kuma
 each grouped by its **real location**, pinned to its **exact map spot**, and (where
 available) tagged with **photos, amenities, confirmed manager contacts and prices**.
 
-### 🌐 Live: **https://mutalib713.github.io/knust-hostels/**
+### 🌐 Live: **https://knust-hostels.vercel.app/**
 
 > Independent student project — **not affiliated with KNUST**. Always **visit and verify**
 > a room (and its current price) before paying.
@@ -35,6 +35,9 @@ available) tagged with **photos, amenities, confirmed manager contacts and price
   amenities, student review themes, **room-type price ranges**, and Call / Map / Directions buttons.
 - **Interactive map** with colour-coded pins by area (gracefully degrades to a list-only
   view if offline).
+- **"Ask Ama" AI assistant** — a chat helper that answers questions like *"cheapest confirmed
+  hostel in Ayeduase under 3000"*, grounded **only** in the real directory data (Google Gemini
+  via a serverless function; falls back to offline keyword search if the AI is unavailable).
 - **Prices** for 31 hostels (room-type ranges, e.g. *2-in-1 GHS 3,400–5,200*), sourced from getrooms.co.
 - **HostelHubb app promo** — for room **videos** and direct booking (Play Store / App Store).
 - **Mobile-first**, dark mode, sticky search, back-to-top, **CSV export**, and a safety disclaimer.
@@ -132,8 +135,13 @@ python enrich_build.py
 
 ## Deploy
 
-Hosted on **GitHub Pages** (branch `main`, root). It rebuilds automatically on every push —
-so to update the live site, just commit and `git push`.
+Hosted on **Vercel** (static site + one serverless function). Every push to `main` auto-deploys.
+
+- **Static site** — `index.html` + `data.js`, no build step.
+- **AI backend** — `api/chat.js`, a Vercel serverless function that proxies **Google Gemini**
+  and keeps the API key server-side. Set one environment variable in Vercel: **`GEMINI_KEY`**
+  (optional: `GEMINI_MODEL`, `GEMINI_FALLBACK_MODEL`, `THINKING_LEVEL`, `GEMINI_TIMEOUT_MS`).
+- `.vercelignore` keeps the build scripts and raw data out of the public deployment.
 
 ---
 
