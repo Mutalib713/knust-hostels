@@ -85,20 +85,36 @@ export default {
     // maxOutputTokens stays generous so even "medium" leaves plenty of room.
     const thinkingLevel = (env.THINKING_LEVEL || "minimal").trim();
 
-    const payload = {
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents,
-      generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
-      thinkingConfig: { thinking_level: thinkingLevel },
-    };
+    // thinkingConfig goes INSIDE generationConfig (top-level is rejected by the API).
+    // The field differs by model family — Gemini 3 uses thinking_level, Gemini 2.5
+    // uses thinkingBudget — so we try the v3 form, fall back to the v2.5 form, then
+    // to no thinking control, retrying ONLY when the model rejects the field.
+    const base = { temperature: 0.4, maxOutputTokens: 2048 };
+    const attempts = [
+      { ...base, thinkingConfig: { thinking_level: thinkingLevel } },                          // Gemini 3
+      { ...base, thinkingConfig: { thinkingBudget: thinkingLevel === "minimal" ? 0 : 512 } },  // Gemini 2.5
+      base,                                                                                     // none
+    ];
+    const callGemini = (genConfig) =>
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents,
+          generationConfig: genConfig,
+        }),
+      });
 
     let res;
     try {
-      res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      res = await callGemini(attempts[0]);
+      let i = 1;
+      while (res.status === 400 && i < attempts.length) {
+        const t = await res.text();
+        if (!/thinking/i.test(t)) return json({ error: "Gemini 400", detail: t.slice(0, 300) }, 502, cors);
+        res = await callGemini(attempts[i++]); // model rejected the thinking field — try the next form
+      }
     } catch (e) {
       return json({ error: "Could not reach Gemini" }, 502, cors);
     }
