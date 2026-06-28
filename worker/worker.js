@@ -76,16 +76,20 @@ export default {
 
     const model = (env.GEMINI_MODEL || "gemini-2.0-flash").trim().replace(/^models\//, "");
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
-    // Turn OFF "thinking" on 2.5 models so the whole token budget goes to the
-    // visible answer (thinking models otherwise spend it reasoning and truncate
-    // the reply). Harmless on non-thinking models like gemini-2.0-flash.
-    const generationConfig = { temperature: 0.4, maxOutputTokens: 1024 };
-    if (/2\.5|thinking/i.test(model)) generationConfig.thinkingConfig = { thinkingBudget: 0 };
+    // Thinking effort. Gemini 3 (and 2.5) reason before answering, which can eat
+    // the output-token budget and truncate the reply. `thinking_level` dials it:
+    //   minimal ≈ near-instant — we already send pre-filtered, EXACT hostel data,
+    //             so the model is phrasing, not calculating (little reasoning needed)
+    //   low | medium | high → progressively more reasoning, slightly slower.
+    // Override per deployment with the THINKING_LEVEL env var (no redeploy needed).
+    // maxOutputTokens stays generous so even "medium" leaves plenty of room.
+    const thinkingLevel = (env.THINKING_LEVEL || "minimal").trim();
 
     const payload = {
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents,
-      generationConfig,
+      generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
+      thinkingConfig: { thinking_level: thinkingLevel },
     };
 
     let res;
