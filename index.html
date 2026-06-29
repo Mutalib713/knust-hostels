@@ -267,15 +267,15 @@
 <header class="top"><div class="wrap">
   <div class="topbar">
     <div class="brand"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></span>
-      <div>KNUST Hostels Directory<small>Find a hostel near your college</small></div></div>
+      <div>KNUST Hostels Directory<small>Hostels, guest houses &amp; apartments near you</small></div></div>
     <div class="row">
       <button class="iconbtn" id="csvBtn" title="Download the hostels currently shown as a CSV spreadsheet — name, area, distance to campus, price, rating, phone &amp; Google Maps link. Opens in Excel or Google Sheets." aria-label="Download results as CSV spreadsheet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>
       <button class="iconbtn" id="themeBtn" aria-label="Toggle dark / light theme" title="Toggle theme"><svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
     </div>
   </div>
   <div class="hero">
-    <h1>Find a hostel around KNUST</h1>
-    <p class="sub"><b id="heroCount">532</b> hostels, halls & guest houses — on campus and across Kotei, Ayeduase, Bomso, Boadi & other student areas. Photos, amenities, confirmed manager contacts & exact Google Maps locations.</p>
+    <h1>Find a place to stay around KNUST</h1>
+    <p class="sub"><b id="heroCount">514</b> student places — <b>hostels, guest houses, hotels & self-contained apartments</b> — on campus and across Kotei, Ayeduase, Bomso, Boadi & other student areas. Photos, amenities, confirmed contacts & exact Google Maps locations.</p>
   </div>
 </div></header>
 
@@ -313,6 +313,9 @@
 
 <main class="wrap">
   <section class="kpis" id="kpis"></section>
+
+  <div style="font-size:12.5px;color:var(--faint);margin:14px 2px 6px">Types (tap to filter):</div>
+  <div class="areas" id="types"></div>
 
   <div style="font-size:12.5px;color:var(--faint);margin:8px 2px 6px">Areas covered (tap to filter):</div>
   <div class="areas" id="areas"></div>
@@ -400,7 +403,7 @@
   const tickSvg='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
   document.getElementById('kpis').innerHTML=[
-    ['Total hostels',M.total],['Confirmed contacts',M.confirmed],['With photos',M.with_images],
+    ['Total places',M.total],['Confirmed contacts',M.confirmed],['With photos',M.with_images],
     ['Areas',(M.areas||[]).length],['Colleges',(M.colleges||[]).length],['On campus',M.area_counts['On Campus (KNUST)']||0]
   ].map(k=>`<div class="kpi"><div class="n mono">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
   document.getElementById('heroCount').textContent=M.total;document.getElementById('tot').textContent=M.total;
@@ -413,6 +416,8 @@
   (META.types||Object.keys(catCounts)).forEach(c=>{if(catCounts[c])catSel.add(new Option(`${c} (${catCounts[c]})`,c));});
   document.getElementById('amenbar').innerHTML=(M.amenities||[]).map(a=>`<button class="atog" data-a="${esc(a)}">${esc(a)}</button>`).join('');
   document.getElementById('areas').innerHTML=(M.areas||[]).map(a=>`<span class="areachip" data-area="${esc(a)}"><span class="dot" style="background:${aColor[a]}"></span>${esc(a)} <b>${M.area_counts[a]}</b></span>`).join('');
+  const TLABEL={'Hostel':'Hostels','Guest house & Hotel':'Guesthouses & hotels','Apartment / Self-contained':'Apartments'};
+  document.getElementById('types').innerHTML=(M.types||[]).map(t=>`<span class="areachip" data-type="${esc(t)}">${esc(TLABEL[t]||t)} <b>${(M.type_counts||{})[t]||0}</b></span>`).join('');
 
   let map=null,markers=null;
   try{
@@ -566,6 +571,7 @@
   fbtn.addEventListener('click',()=>{const open=fpanel.classList.toggle('open');fbtn.setAttribute('aria-expanded',open);});
   document.getElementById('amenbar').addEventListener('click',e=>{const b=e.target.closest('.atog');if(!b)return;const a=b.dataset.a;if(activeAmen.has(a)){activeAmen.delete(a);b.classList.remove('on');}else{activeAmen.add(a);b.classList.add('on');}apply();});
   document.getElementById('areas').addEventListener('click',e=>{const c=e.target.closest('.areachip');if(c){areaSel.value=c.dataset.area;apply();window.scrollTo({top:document.getElementById('map').offsetTop-80,behavior:'smooth'});}});
+  document.getElementById('types').addEventListener('click',e=>{const c=e.target.closest('.areachip');if(c){catSel.value=c.dataset.type;apply();window.scrollTo({top:document.getElementById('map').offsetTop-80,behavior:'smooth'});}});
   ['college','area','cat','sort','confonly','photoonly'].forEach(id=>document.getElementById(id).addEventListener('change',apply));
   document.getElementById('moreBtn').addEventListener('click',()=>{shown=Math.min(shown+PAGE,filtered.length);render();});
   document.getElementById('resetBtn').addEventListener('click',()=>{
