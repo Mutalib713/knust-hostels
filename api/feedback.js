@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
   const tgToken = process.env.FEEDBACK_TELEGRAM_TOKEN;
   const tgChat = process.env.FEEDBACK_TELEGRAM_CHAT_ID;
-  const w3key = process.env.FEEDBACK_WEB3FORMS_KEY;
+  const w3key = process.env.FEEDBACK_WEB3FORMS_KEY || "64d8f535-9c86-4060-ad42-4e67720bf8b3"; // Web3Forms public key → emails mosman40@st.knust.edu.gh
 
   try {
     if (tgToken && tgChat) {
