@@ -233,10 +233,11 @@
   .cbchips{display:flex;gap:7px;padding:9px 12px 5px;flex-wrap:wrap;background:var(--bg);border-top:1px solid var(--border)}
   .cbchip{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
   .cbchip:hover{border-color:var(--cta);color:var(--cta-press)}
-  .cbchip-owner{background:var(--cta);border-color:var(--cta);color:#fff;font-weight:700;animation:cbpulse 2.4s ease-in-out infinite}
-  .cbchip-owner:hover{background:var(--cta-press);border-color:var(--cta-press);color:#fff;animation:none}
-  @keyframes cbpulse{0%,100%{box-shadow:0 2px 7px rgba(245,158,11,.35)}50%{box-shadow:0 4px 15px rgba(245,158,11,.75)}}
-  @media (prefers-reduced-motion:reduce){.cbchip-owner{animation:none}}
+  .cbcontact{background:var(--cta);color:#3a2606;border:none;border-radius:999px;padding:6px 11px;font-size:12.5px;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;animation:cbpulse 2.2s ease-in-out infinite}
+  .cbcontact:hover{background:#ffd27a;animation:none}
+  .cbhtitle{min-width:0}
+  @keyframes cbpulse{0%{box-shadow:0 0 0 0 rgba(245,158,11,.6)}70%{box-shadow:0 0 0 8px rgba(245,158,11,0)}100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}}
+  @media (prefers-reduced-motion:reduce){.cbcontact{animation:none}}
   .cbwa{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;font-weight:600;border-radius:10px;padding:9px 14px;text-decoration:none;margin:2px 0 10px;font-size:14px}
   .cbwa:hover{background:#1ebe57}
   .cbfb{display:flex;flex-direction:column;gap:8px;margin-top:2px}
@@ -364,6 +365,7 @@
   <div class="cbhead">
     <div class="cbava" aria-hidden="true">A</div>
     <div class="cbhtitle"><b>Ama</b><small><span class="cbonline" aria-hidden="true"></span>KNUST hostel finder</small></div>
+    <button class="cbcontact" id="cbContact" type="button" aria-label="Message us — report or ask the owner">📩 Message us</button>
     <button class="cbx" id="cbClose" aria-label="Close assistant"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   </div>
   <div class="cbbody" id="cbBody" aria-live="polite"></div>
@@ -583,6 +585,7 @@
     if(!tab) return;
     const WORKER_URL="/api/chat"; /* Vercel serverless function → Gemini; empty = offline keyword search */
     const OWNER_WHATSAPP="233599536240"; /* owner WhatsApp, international format digits only (no +, no leading 0). Empty = hide WhatsApp button. */
+    const WEB3FORMS_KEY="64d8f535-9c86-4060-ad42-4e67720bf8b3"; /* Web3Forms public access key → emails mosman40@st.knust.edu.gh (called client-side; key is public-safe) */
     let hist=[];
     const nrm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
     const callSvg='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
@@ -721,25 +724,31 @@
       if(val('website')){note.textContent='Sent.';return;}            // honeypot tripped
       const message=val('message').trim();
       if(message.length<2){note.textContent='Please type a message first.';return;}
+      const contact=val('contact').trim();
       btn.disabled=true;note.textContent='Sending…';
       try{
-        const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({message,name:val('name').trim(),contact:val('contact').trim(),page:location.href})});
-        if(!res.ok)throw 0;
-        note.innerHTML='✅ Sent — thank you! We’ll get back to you'+(val('contact').trim()?'':' if you leave a contact')+'.';
+        const res=await fetch('https://api.web3forms.com/submit',{method:'POST',
+          headers:{'Content-Type':'application/json',Accept:'application/json'},
+          body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:'New KNUST Hostels message',
+            from_name:val('name').trim()||'KNUST Hostels visitor',replyto:/\S+@\S+\.\S+/.test(contact)?contact:undefined,
+            botcheck:'',name:val('name').trim()||'anonymous',contact:contact||'(none given)',message,page:location.href})});
+        const d=await res.json().catch(()=>({}));
+        if(!d.success)throw 0;
+        note.innerHTML='✅ Sent — thank you! We’ll get back to you'+(contact?'':' if you leave a contact')+'.';
         btn.style.display='none';
       }catch(err){
-        note.innerHTML='Couldn’t send right now — please try the WhatsApp button'+(OWNER_WHATSAPP?' above':' (added soon)')+' or try again later.';
+        note.innerHTML='Couldn’t send right now — please use the WhatsApp button above or try again later.';
         btn.disabled=false;
       }
     }
     const CHIPS=['Cheapest in Ayeduase','Confirmed contacts near campus','Hostels for Engineering','With photos under 4000','Best rated in Kotei','Gaza under 3000'];
-    chipsEl.innerHTML='<button type="button" class="cbchip cbchip-owner">📩 Message us</button>'+CHIPS.map(c=>'<button type="button" class="cbchip">'+c+'</button>').join('');
-    chipsEl.addEventListener('click',e=>{const b=e.target.closest('.cbchip');if(!b)return;if(b.classList.contains('cbchip-owner'))openContact();else respond(b.textContent);});
+    chipsEl.innerHTML=CHIPS.map(c=>'<button type="button" class="cbchip">'+c+'</button>').join('');
+    chipsEl.addEventListener('click',e=>{const b=e.target.closest('.cbchip');if(b)respond(b.textContent);});
     let opened=false;
     function open(){panel.classList.add('open');tab.classList.add('hide');tab.setAttribute('aria-expanded','true');if(!opened){opened=true;addMsg('bot','<p>'+welcome()+'</p>');}setTimeout(()=>input.focus(),60);}
     function close(){panel.classList.remove('open');tab.classList.remove('hide');tab.setAttribute('aria-expanded','false');}
     tab.addEventListener('click',open);closeBtn.addEventListener('click',close);
+    const contactBtn=document.getElementById('cbContact');if(contactBtn)contactBtn.addEventListener('click',()=>{if(!panel.classList.contains('open'))open();openContact();});
     form.addEventListener('submit',e=>{e.preventDefault();const v=input.value.trim();if(!v)return;respond(v);input.value='';});
     body.addEventListener('click',e=>{const c=e.target.closest('.cbcard');if(c&&!e.target.closest('.cbcall'))openModal(H[+c.dataset.i]);});
     body.addEventListener('keydown',e=>{if(e.key==='Enter'){const c=e.target.closest('.cbcard');if(c){e.preventDefault();openModal(H[+c.dataset.i]);}}});
