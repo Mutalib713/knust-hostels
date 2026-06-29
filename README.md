@@ -1,4 +1,4 @@
-# KNUST Hostels Directory — 530+ hostels on & around campus
+# KNUST Hostels Directory — 510+ hostels on & around campus
 
 A comprehensive, searchable directory of hostels, halls, guest houses and student
 accommodation **on the KNUST campus and across the close student areas** of Kumasi —
@@ -16,20 +16,21 @@ available) tagged with **photos, amenities, confirmed manager contacts and price
 
 | | |
 |---|---:|
-| **Total places** | **532** (on campus + within ~6 km) |
-| On campus / Gaza pocket | 46 / 18 |
-| **Confirmed manager contacts** (green tick) | **105** |
-| With a phone number | 322 |
-| With photos | 352 |
+| **Total places** | **514** (on campus + within ~6 km) |
+| **Types** | Hostel **403** · Guest house & Hotel **99** · Apartment/Self-contained **12** |
+| On campus / Gaza pocket | 36 / 18 |
+| **Confirmed manager contacts** (green tick) | **103** |
+| With a phone number | 319 |
+| With photos | 347 |
 | With published price ranges | 31 |
-| Map-pinned (lat/lng) | **532 (all)** |
+| Map-pinned (lat/lng) | **514 (all)** |
 | Average Google rating | 3.99★ |
 
 ## What's in the dashboard
 
 - **Smart search & sort** — search-as-you-type suggestions, sort by **Most popular**
   (default), distance, rating, reviews, price, confirmed-first or name.
-- **Filters** — by college, area, **type (with counts, e.g. "Hostel (355)")**, amenities,
+- **Filters** — by college, area, **type — 3 clean buckets (Hostel · Guest house & Hotel · Apartment) with counts**, amenities,
   confirmed-only and has-photo, with a one-tap **Reset all filters** and a live **"X found"** count.
 - **Detail view** — photo gallery (tap to open a full-screen viewer with **swipe** + arrows),
   amenities, student review themes, **room-type price ranges**, and Call / Map / Directions buttons.
@@ -67,10 +68,11 @@ Works for both **freshers** and **continuing students**:
 - **`getrooms_prices.json`** — scraped room-type prices (exact-name matched).
 - **`mp_geocode.json`** — coordinates for the contact-only hostels.
 - **`enrich_build.py`** — builds `data.js` + the CSV from all of the above.
+- **`reclassify_clean.py`** — final pass: de-dupes, merges building fragments, and sets the 3 clean **Type** buckets.
 
 ## CSV columns
 
-`Name, Area, Category, Distance_km, Rating, Reviews, Price_from_GHS, Price_source,
+`Name, Area, Type, Category, Distance_km, Rating, Reviews, Price_from_GHS, Price_source,
 Phone, Confirmed_Contact, Amenities, Colleges_nearby, Website, Latitude, Longitude,
 Google_Maps_URL, Image`
 
@@ -78,17 +80,17 @@ Google_Maps_URL, Image`
 
 | Area | Count |  | Area | Count |
 |------|------:|--|------|------:|
-| Kotei | 141 | | Ayigya | 13 |
+| Kotei | 137 | | Ayigya | 13 |
 | Ayeduase | 138 | | Oduom | 12 |
-| Boadi | 47 | | Anwomaso | 11 |
-| **On Campus (KNUST)** | **46** | | Anloga Junction | 9 |
+| Boadi | 43 | | Anwomaso | 11 |
+| **On Campus (KNUST)** | **36** | | Anloga Junction | 9 |
 | Bomso | 22 | | Gyinyase | 8 |
 | Deduako | 19 | | Emena | 7 |
 | **Gaza** | **18** | | Appiadu | 6 |
 | Kentinkrono | 15 | | Susuanso (campus edge) | 5 |
 | Oforikrom | 15 | | | |
 
-**On-campus group (46)** = traditional halls (University/Katanga, Unity, Republic, Queen's,
+**On-campus group (36)** = traditional halls (University/Katanga, Unity, Republic, Queen's,
 Africa, Independence, Chancellor's/Hall 7) **and** private hostels on KNUST land (Spring, Shaba,
 Steven Paris, Transport, R-TEP, TEK Credit, GUSSS, Graduate Students' Hostel, on-campus guest houses).
 
@@ -116,9 +118,14 @@ student suburbs within ~6 km. (`merge_clean.py` → `reverse_geocode.py` → `ca
 - **Prices** scraped from **getrooms.co** (browser crawl; only ~23 of its KNUST listings publish
   real figures) plus a few from studentroombook.com — exact-name matched, written to `getrooms_prices.json`.
 
+**Layer 3 — cleanup & types (`reclassify_clean.py`).** Collapses Google's 22 raw place-types into
+**3 buckets** (Hostel · Guest house & Hotel · Apartment/Self-contained) by name then category, drops
+true duplicates (same phone) and nameless fragments, and merges split listings — on-campus hall wings
+(Queen's/Republic/Unity/Katanga) and BMS Lodge's per-room-type entries — into one. Takes the set from 532 → **514**.
+
 ## Data-quality notes
 
-- All 532 places are map-pinned; ~25 of the original set use a Google area-level fallback pin —
+- All 514 places are map-pinned; ~25 of the original set use a Google area-level fallback pin —
   use the Maps link to confirm the exact spot. Distances are straight-line from campus centre.
 - Contact-only entries (the 31 added from the MP/SRC lists) have a confirmed phone but no rating,
   photos or website yet, and their pin is an area-level estimate.
@@ -133,6 +140,9 @@ python merge_clean.py && python reverse_geocode.py && python campus_boundary.py 
 
 # Layer 2 (rebuild data.js + CSV from the enrichment sources):
 python enrich_build.py
+
+# Layer 3 (de-dupe, merge building fragments, set the 3 clean Type buckets):
+python reclassify_clean.py
 ```
 
 ## Deploy

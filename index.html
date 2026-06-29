@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>KNUST Hostels Directory — 530+ hostels on & around campus</title>
+<title>KNUST Hostels Directory — 510+ hostels on & around campus</title>
 <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -409,8 +409,8 @@
   const colSel=document.getElementById('college'),areaSel=document.getElementById('area'),catSel=document.getElementById('cat');
   (M.colleges||[]).forEach(c=>colSel.add(new Option(c,c)));
   (M.areas||[]).forEach(a=>areaSel.add(new Option(`${a} (${M.area_counts[a]})`,a)));
-  const catCounts={};H.forEach(r=>catCounts[r.category]=(catCounts[r.category]||0)+1);
-  Object.keys(catCounts).sort((a,b)=>catCounts[b]-catCounts[a]||a.localeCompare(b)).forEach(c=>catSel.add(new Option(`${c} (${catCounts[c]})`,c)));
+  const catCounts={};H.forEach(r=>catCounts[r.type]=(catCounts[r.type]||0)+1);
+  (META.types||Object.keys(catCounts)).forEach(c=>{if(catCounts[c])catSel.add(new Option(`${c} (${catCounts[c]})`,c));});
   document.getElementById('amenbar').innerHTML=(M.amenities||[]).map(a=>`<button class="atog" data-a="${esc(a)}">${esc(a)}</button>`).join('');
   document.getElementById('areas').innerHTML=(M.areas||[]).map(a=>`<span class="areachip" data-area="${esc(a)}"><span class="dot" style="background:${aColor[a]}"></span>${esc(a)} <b>${M.area_counts[a]}</b></span>`).join('');
 
@@ -435,12 +435,12 @@
     const confonly=document.getElementById('confonly').checked,photoonly=document.getElementById('photoonly').checked;
     filtered=H.filter(r=>{
       if(a&&r.area!==a)return false;
-      if(c&&r.category!==c)return false;
+      if(c&&r.type!==c)return false;
       if(col&&!(r.colleges||[]).includes(col))return false;
       if(confonly&&!r.confirmed)return false;
       if(photoonly&&!(r.images&&r.images.length))return false;
       if(activeAmen.size){for(const am of activeAmen)if(!(r.amenities||[]).includes(am))return false;}
-      if(q&&!((r.name+' '+r.area+' '+r.category).toLowerCase().includes(q)))return false;
+      if(q&&!((r.name+' '+r.area+' '+r.category+' '+(r.type||'')).toLowerCase().includes(q)))return false;
       return true;
     });
     filtered.sort((x,y)=>{
@@ -464,7 +464,7 @@
     return `<article class="card" data-id="${r._i}">
       ${ph}${r.confirmed?`<span class="tick">${tickSvg} Confirmed</span>`:''}${r.km_from_knust!=null?`<span class="distb">${r.km_from_knust} km</span>`:''}${r.price_from?`<span class="pricetag">from GHS ${r.price_from.toLocaleString()}</span>`:''}</div>
       <div class="body">
-        <div class="row"><span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span></div>
+        <div class="row"><span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.type||r.category)}</span></div>
         <h3>${esc(r.name)}</h3>
         <div class="row">${rating}</div>
         ${am?`<div class="amini">${am}</div>`:''}
@@ -504,7 +504,7 @@
       <div class="dbody"><div class="dgrid">
         <div class="dmain">
           <h2>${esc(r.name)}</h2>
-          <div class="row" style="margin-bottom:4px">${r.confirmed?`<span class="tickbig">${tickSvg} Confirmed contact</span>`:''}<span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.category)}</span>${r.km_from_knust!=null?`<span class="badge" style="background:rgba(245,158,11,.14);color:var(--cta-press)">${r.km_from_knust} km to KNUST</span>`:''}${r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:''}</div>
+          <div class="row" style="margin-bottom:4px">${r.confirmed?`<span class="tickbig">${tickSvg} Confirmed contact</span>`:''}<span class="badge area"><span style="width:8px;height:8px;border-radius:50%;background:${aColor[r.area]};display:inline-block"></span>${esc(r.area)}</span><span class="badge cat">${esc(r.type||r.category)}</span>${r.km_from_knust!=null?`<span class="badge" style="background:rgba(245,158,11,.14);color:var(--cta-press)">${r.km_from_knust} km to KNUST</span>`:''}${r.rating?`<span class="stars">${star} ${r.rating.toFixed(1)} <span class="rev">(${r.reviews})</span></span>`:''}</div>
           <div class="sec"><h3>About</h3><p>${esc(descOf(r))}</p></div>
           ${am}${roomSec}${tags}
           <div class="sec"><h3>Location</h3><div id="dmap"></div><p style="font-size:12.5px;color:var(--faint);margin-top:8px">${esc(r.area)} · ${r.km_from_knust!=null?r.km_from_knust+' km from campus (straight line)':''}</p></div>
@@ -600,7 +600,7 @@
     const AREA_SYN=[[/ayeduase|new ?site/,'Ayeduase'],[/kotei/,'Kotei'],[/bomso/,'Bomso'],[/gaza|ghana hostel/,'Gaza'],[/kentin?krono|nsenie/,'Kentinkrono'],[/oduom/,'Oduom'],[/boadi/,'Boadi'],[/anloga/,'Anloga Junction'],[/ayigya/,'Ayigya'],[/deduako/,'Deduako'],[/oforikrom/,'Oforikrom'],[/anwomaso/,'Anwomaso'],[/gyinyase/,'Gyinyase'],[/emena/,'Emena'],[/appiadu/,'Appiadu'],[/susuanso/,'Susuanso (campus edge)'],[/on ?campus|\bhalls?\b/,'On Campus (KNUST)']];
     const COLLEGE_SYN=[[/engineer/,'Engineering'],[/\bscience\b|\bcos\b/,'Science'],[/\bart\b|built environment|architect|cabe/,'Art & Built Environment'],[/business|\bksb\b|humanities|social scien|\blaw\b/,'Humanities & Social Sciences (KSB)'],[/health|medic|pharmac|nursing|\bchs\b/,'Health Sciences'],[/agric|natural resource|\bcanr\b/,'Agriculture & Natural Resources']];
     function parse(t){
-      const s={areas:[],college:null,priceMin:null,priceMax:null,confirmed:false,photos:false,near:false,walk:false,best:false,cheapest:false,roomType:null,category:null,minRating:null};
+      const s={areas:[],college:null,priceMin:null,priceMax:null,confirmed:false,photos:false,near:false,walk:false,best:false,cheapest:false,roomType:null,type:null,minRating:null};
       AREA_SYN.forEach(([re,a])=>{if(re.test(t)&&(M.areas||[]).includes(a)&&!s.areas.includes(a))s.areas.push(a);});
       for(const [re,c] of COLLEGE_SYN){if(re.test(t)&&(M.colleges||[]).includes(c)){s.college=c;break;}}
       s.confirmed=/confirm|verified|trusted|with (a )?(number|contact)|can call|reachable/.test(t);
@@ -610,7 +610,7 @@
       s.best=/best|top[- ]?rated|highly rated|good rating|good review|popular/.test(t);
       s.cheapest=/cheap|cheapest|affordable|budget|low(est)? ?price/.test(t);
       if(/2 ?in ?(a|1|one)|two in|double/.test(t))s.roomType='2';else if(/1 ?in ?(a|1|one)|single/.test(t))s.roomType='1';else if(/3 ?in ?(a|1|one)|three in/.test(t))s.roomType='3';else if(/4 ?in ?(a|1|one)|four in|quad/.test(t))s.roomType='4';
-      if(/\bhotel\b/.test(t))s.category='Hotel';else if(/guest ?house/.test(t))s.category='Guest house';
+      if(/hotel|guest ?house|\blodge\b|lodging|motel|\binn\b/.test(t))s.type='Guest house & Hotel';else if(/apartment|self[- ]?contain|\bflat\b/.test(t))s.type='Apartment / Self-contained';
       if(/well rated|good rating|4 ?\+|highly rated|top rated/.test(t))s.minRating=4;
       const nums=[];t.replace(/(\d[\d,\.]*)\s*(k)?/gi,(m,n,k)=>{let v=parseFloat(n.replace(/,/g,''));if(k)v*=1000;if(v>=300)nums.push(Math.round(v));return m;});
       const between=/between|–|—/.test(t)||/\d\s*(?:-|to)\s*\d/.test(t);
@@ -621,14 +621,14 @@
       else if(nums.length&&/ghs|cedis|budget|price|afford|spend/.test(t))s.priceMax=nums[0];
       return s;
     }
-    const has=s=>s.areas.length||s.college||s.priceMin!=null||s.priceMax!=null||s.confirmed||s.photos||s.near||s.best||s.cheapest||s.roomType||s.category||s.minRating!=null;
+    const has=s=>s.areas.length||s.college||s.priceMin!=null||s.priceMax!=null||s.confirmed||s.photos||s.near||s.best||s.cheapest||s.roomType||s.type||s.minRating!=null;
     function search(s){
       let r=H.filter(h=>{
         if(s.areas.length&&!s.areas.includes(h.area))return false;
         if(s.college&&!(h.colleges||[]).includes(s.college))return false;
         if(s.confirmed&&!h.confirmed)return false;
         if(s.photos&&!(h.images&&h.images.length))return false;
-        if(s.category&&h.category!==s.category)return false;
+        if(s.type&&h.type!==s.type)return false;
         if(s.minRating!=null&&(h.rating||0)<s.minRating)return false;
         if(s.priceMax!=null&&(h.price_from==null||h.price_from>s.priceMax))return false;
         if(s.priceMin!=null&&(h.price_from==null||h.price_from<s.priceMin))return false;
@@ -643,7 +643,7 @@
     }
     function describe(s,noP){
       const p=[];
-      if(s.category)p.push(s.category.toLowerCase()+'s');
+      if(s.type)p.push({'Hostel':'hostels','Guest house & Hotel':'guest houses / hotels','Apartment / Self-contained':'apartments'}[s.type]||'');
       if(s.areas.length)p.push('in '+s.areas.join(' or '));
       if(s.college)p.push('handy for '+s.college.replace(' (KSB)','')+' students');
       if(s.confirmed)p.push('with a confirmed contact');
@@ -697,7 +697,7 @@
       const cands=(a.cards&&a.cards.length)?a.cards:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12);
       if(WORKER_URL){
         try{
-          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone}));
+          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,type:h.type,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone}));
           const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-6),hostels:compact})});
           if(!res.ok)throw 0;const d=await res.json();const reply=(d.reply||'').trim();if(!reply)throw 0;
           tp.remove();
