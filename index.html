@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KNUST Hostels Directory — 530+ hostels on & around campus</title>
+<script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -28,6 +29,9 @@
   .brand .logo{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.14);display:grid;place-items:center;border:1px solid rgba(255,255,255,.25)}
   .brand small{display:block;font-weight:400;font-size:12px;opacity:.85}
   .iconbtn{cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:10px;height:38px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px}
+  #themeBtn .ic-sun{display:none}
+  [data-theme="dark"] #themeBtn .ic-moon{display:none}
+  [data-theme="dark"] #themeBtn .ic-sun{display:block}
   .iconbtn:hover{background:rgba(255,255,255,.22)}
   .hero{padding:6px 0 24px}
   .hero h1{margin:.1em 0 .15em;font-size:clamp(24px,4vw,40px);line-height:1.08}
@@ -266,7 +270,7 @@
       <div>KNUST Hostels Directory<small>Find a hostel near your college</small></div></div>
     <div class="row">
       <button class="iconbtn" id="csvBtn" title="Download the hostels currently shown as a CSV spreadsheet — name, area, distance to campus, price, rating, phone &amp; Google Maps link. Opens in Excel or Google Sheets." aria-label="Download results as CSV spreadsheet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>
-      <button class="iconbtn" id="themeBtn" aria-label="Dark mode"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      <button class="iconbtn" id="themeBtn" aria-label="Toggle dark / light theme" title="Toggle theme"><svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button>
     </div>
   </div>
   <div class="hero">
@@ -571,7 +575,7 @@
     activeAmen.clear();document.querySelectorAll('#amenbar .atog.on').forEach(b=>b.classList.remove('on'));
     sugg.classList.remove('open');apply();
   });
-  document.getElementById('themeBtn').addEventListener('click',()=>{const d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'light':'dark');setTimeout(()=>{if(map)map.invalidateSize();},50);});
+  document.getElementById('themeBtn').addEventListener('click',()=>{const d=document.documentElement.getAttribute('data-theme')==='dark';const next=d?'light':'dark';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('theme',next);}catch(e){}setTimeout(()=>{if(map)map.invalidateSize();},50);});
   document.getElementById('csvBtn').addEventListener('click',()=>{const cols=['name','area','category','km_from_knust','rating','reviews','phone','confirmed','price_from','website','lat','lng','maps_url'];const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';const rows=[cols.join(',')].concat(filtered.map(r=>cols.map(c=>q(r[c])).join(',')));const b=new Blob([rows.join('\r\n')],{type:'text/csv'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='knust_hostels.csv';a.click();});
   const totop=document.getElementById('totop');
   window.addEventListener('scroll',()=>totop.classList.toggle('show',window.scrollY>500),{passive:true});
