@@ -729,7 +729,7 @@
       if(a.cards&&a.cards.length)lastCands=a.cards;  // remember for follow-ups like "where is it?"
       if(WORKER_URL){
         try{
-          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,type:h.type,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone,amenities:(h.amenities||[]).slice(0,6)}));
+          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,type:h.type,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone,amenities:h.amenities||[]}));
           const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-6),hostels:compact})});
           if(!res.ok)throw 0;const d=await res.json();const reply=(d.reply||'').trim();if(!reply)throw 0;
           tp.remove();
