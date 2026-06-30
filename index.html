@@ -403,8 +403,8 @@
   const tickSvg='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
   document.getElementById('kpis').innerHTML=[
-    ['Total places',M.total],['Confirmed contacts',M.confirmed],['With photos',M.with_images],
-    ['Areas',(M.areas||[]).length],['Colleges',(M.colleges||[]).length],['On campus',M.area_counts['On Campus (KNUST)']||0]
+    ['Total places',M.total],['Phone contacts',M.with_phone],['Confirmed',M.confirmed],['With photos',M.with_images],
+    ['Areas',(M.areas||[]).length],['On campus',M.area_counts['On Campus (KNUST)']||0]
   ].map(k=>`<div class="kpi"><div class="n mono">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
   document.getElementById('heroCount').textContent=M.total;document.getElementById('tot').textContent=M.total;
   ['bookCount','footCount'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=M.total;});
@@ -670,9 +670,12 @@
       return {text:'Found <b>'+n+'</b> hostel'+(n>1?'s':'')+(d?' '+d:'')+'. Showing '+show+ord+':',cards:res.slice(0,show)};
     }
     function named(t){
-      const nq=nrm(t);if(nq.length<4)return [];
-      const out=[];H.forEach(h=>{const nn=nrm(h.name);if(nn.length>=4&&(nq.indexOf(nn)>=0||nn.indexOf(nq)>=0))out.push(h);});
-      return out.length<=6?out:[];
+      // strip generic words so "frontline hostel" still matches "Frontline Apartment/Court/Inn"
+      const stop=/\b(hostels?|hostle|hotels?|lodges?|lodging|apartments?|inns?|house|homes?|guest|the|an?|in|at|on|near|around|knust|kumasi|please|find|show|tell|me|about|do|does|you|have|got|any|number|contact|details?)\b/g;
+      const cleaned=t.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(stop,' ').replace(/\s+/g,' ').trim();
+      const nq=nrm(cleaned);if(nq.length<3)return [];
+      const out=[];H.forEach(h=>{const nn=nrm(h.name);if(nn.length>=3&&(nn.indexOf(nq)>=0||nq.indexOf(nn)>=0))out.push(h);});
+      return out.slice(0,8);
     }
     function welcome(){return "Hi, I'm <b>Ama</b> — your KNUST hostel finder. Tell me what you're after and I'll search all <b>"+M.total+"</b> hostels. e.g. “confirmed hostels in Ayeduase under 3000” or “cheapest near campus”.";}
     function answer(q){
@@ -684,7 +687,8 @@
       const s=parse(t);
       if(has(s))return compose(s,search(s));
       const nm=named(t);
-      if(nm.length){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:nm.slice(0,3)};}
+      if(nm.length===1){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:[h]};}
+      if(nm.length){return {text:'I found <b>'+nm.length+'</b> matching that — '+nm.slice(0,6).map(h=>esc(h.name)).join(', ')+'. Tap any for details.',cards:nm.slice(0,6)};}
       return {text:"I can search by <b>area</b>, <b>budget</b>, <b>college</b>, <b>confirmed contact</b>, photos or distance. Try a suggestion below ↓"};
     }
     function cardHTML(h){
