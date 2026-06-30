@@ -700,7 +700,7 @@
         if(nm.length===1){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:[h]};}
         return {text:'I found <b>'+nm.length+'</b> matching that — '+nm.slice(0,6).map(h=>esc(h.name)).join(', ')+'. Tap any for details.',cards:nm.slice(0,6)};
       }
-      if(has(s)){const res=search(s);if(isCount)return {text:'There are <b>'+res.length+'</b> hostel'+(res.length===1?'':'s')+' '+(describe(s,true)||'matching that')+'.',cards:res.slice(0,6)};return compose(s,res);}
+      if(has(s)){const res=search(s);if(isCount)return {text:'There are <b>'+res.length+'</b> hostel'+(res.length===1?'':'s')+' '+(describe(s,true)||'matching that')+'.',cards:res.slice(0,6),meta:true};return compose(s,res);}
       if(isCount||/total hostels|all hostels/.test(t))return {text:'There are <b>'+M.total+'</b> hostels here across '+(M.areas||[]).length+' areas — <b>'+M.confirmed+'</b> with confirmed contacts and <b>'+M.with_phone+'</b> with a phone number.',meta:true};
       return {text:"I can search by <b>area</b>, <b>budget</b>, <b>college</b>, <b>confirmed contact</b>, photos, amenities or distance. Try a suggestion below ↓"};
     }
@@ -717,7 +717,7 @@
     async function respond(q){
       addMsg('user',esc(q));const tp=typing();
       const a=answer(q);
-      if(a.meta){tp.remove();addMsg('bot','<p>'+a.text+'</p>');return;}  // canned info answer -> don't pass stale hostels to Gemini
+      if(a.meta){tp.remove();let h2='<p>'+a.text+'</p>';if(a.cards&&a.cards.length)h2+='<div class="cbcards">'+a.cards.slice(0,5).map(cardHTML).join('')+'</div>';addMsg('bot',h2);return;}  // canned/count answer -> don't let Gemini recount a slice
       const fu=/\b(it|its|it's|that|those|these|they|them|this|the one|the number|the price|cheaper|closer|nearer|another|other one|more|same)\b/i.test(q);
       const cands=(a.cards&&a.cards.length)?a.cards:((fu&&lastCands.length)?lastCands:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12));
       if(a.cards&&a.cards.length)lastCands=a.cards;  // remember for follow-ups like "where is it?"
