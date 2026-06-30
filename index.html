@@ -685,10 +685,14 @@
       if(/^(thanks|thank you|thx|ok|okay|nice|cool|great)/.test(t)&&t.length<16)return {text:"Anytime! Ask me about any KNUST hostel — area, budget, confirmed contacts, photos or distance."};
       if(/how many hostels|total hostels|number of hostels/.test(t))return {text:'There are <b>'+M.total+'</b> hostels here across '+(M.areas||[]).length+' areas — <b>'+M.confirmed+'</b> with confirmed contacts and <b>'+M.with_price+'</b> with published prices.'};
       const s=parse(t);
-      if(has(s))return compose(s,search(s));
       const nm=named(t);
-      if(nm.length===1){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:[h]};}
-      if(nm.length){return {text:'I found <b>'+nm.length+'</b> matching that — '+nm.slice(0,6).map(h=>esc(h.name)).join(', ')+'. Tap any for details.',cards:nm.slice(0,6)};}
+      // a hostel-NAME match wins over a type-only parse, so "Frontline Inn" isn't read as "show me inns"
+      const onlyType=s.type&&!s.areas.length&&s.priceMin==null&&s.priceMax==null&&!s.confirmed&&!s.photos&&!s.near&&!s.walk&&!s.best&&!s.cheapest&&!s.roomType&&!s.category&&s.minRating==null;
+      if(nm.length&&(onlyType||!has(s))){
+        if(nm.length===1){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:[h]};}
+        return {text:'I found <b>'+nm.length+'</b> matching that — '+nm.slice(0,6).map(h=>esc(h.name)).join(', ')+'. Tap any for details.',cards:nm.slice(0,6)};
+      }
+      if(has(s))return compose(s,search(s));
       return {text:"I can search by <b>area</b>, <b>budget</b>, <b>college</b>, <b>confirmed contact</b>, photos or distance. Try a suggestion below ↓"};
     }
     function cardHTML(h){
