@@ -599,7 +599,7 @@
     const WORKER_URL="/api/chat"; /* Vercel serverless function → Gemini; empty = offline keyword search */
     const OWNER_WHATSAPP="233599536240"; /* owner WhatsApp, international format digits only (no +, no leading 0). Empty = hide WhatsApp button. */
     const WEB3FORMS_KEY="64d8f535-9c86-4060-ad42-4e67720bf8b3"; /* Web3Forms public access key → emails mosman40@st.knust.edu.gh (called client-side; key is public-safe) */
-    let hist=[];
+    let hist=[],lastCands=[];
     const nrm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
     const callSvg='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
     const tkSvg='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -670,11 +670,13 @@
       return {text:'Found <b>'+n+'</b> hostel'+(n>1?'s':'')+(d?' '+d:'')+'. Showing '+show+ord+':',cards:res.slice(0,show)};
     }
     function named(t){
-      // strip generic words so "frontline hostel" still matches "Frontline Apartment/Court/Inn"
-      const stop=/\b(hostels?|hostle|hotels?|lodges?|lodging|apartments?|inns?|house|homes?|guest|the|an?|in|at|on|near|around|knust|kumasi|please|find|show|tell|me|about|do|does|you|have|got|any|number|contact|details?)\b/g;
-      const cleaned=t.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(stop,' ').replace(/\s+/g,' ').trim();
-      const nq=nrm(cleaned);if(nq.length<3)return [];
-      const out=[];H.forEach(h=>{const nn=nrm(h.name);if(nn.length>=3&&(nn.indexOf(nq)>=0||nq.indexOf(nn)>=0))out.push(h);});
+      // word-based, so even a question ("where is Adepa located?") still finds the hostel name
+      const stop=/\b(hostels?|hostle|hotels?|lodges?|lodging|apartments?|inns?|house|homes?|guest|the|an?|is|are|am|in|at|on|of|for|to|near|by|around|knust|kumasi|please|find|show|tell|give|list|me|my|it|about|what|whats|where|which|who|when|how|located|locate|location|cost|costs|price|prices|priced|do|does|you|your|have|has|got|any|some|number|contact|details?|info|stay|place|room|rooms|booking)\b/g;
+      const words=t.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(stop,' ').split(/\s+/).filter(w=>w.length>=3);
+      if(!words.length)return [];
+      const joined=nrm(words.join(''));
+      let out=H.filter(h=>nrm(h.name).indexOf(joined)>=0);                       // whole phrase in the name
+      if(!out.length)out=H.filter(h=>words.some(w=>w.length>=4&&nrm(h.name).indexOf(nrm(w))>=0)); // any distinctive word
       return out.slice(0,8);
     }
     function welcome(){return "Hi, I'm <b>Ama</b> — your KNUST hostel finder. Tell me what you're after and I'll search all <b>"+M.total+"</b> hostels. e.g. “confirmed hostels in Ayeduase under 3000” or “cheapest near campus”.";}
@@ -708,7 +710,8 @@
     async function respond(q){
       addMsg('user',esc(q));const tp=typing();
       const a=answer(q);
-      const cands=(a.cards&&a.cards.length)?a.cards:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12);
+      const cands=(a.cards&&a.cards.length)?a.cards:(lastCands.length?lastCands:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12));
+      if(a.cards&&a.cards.length)lastCands=a.cards;  // remember for follow-ups like "where is it?"
       if(WORKER_URL){
         try{
           const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,type:h.type,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone}));
