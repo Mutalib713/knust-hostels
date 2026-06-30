@@ -53,18 +53,25 @@ META = HOSTELS = None
 for line in open(os.path.join(OUT, 'data.js'), encoding='utf-8'):
     if line.startswith('window.META = '): META = json.loads(line[14:].rstrip().rstrip(';'))
     elif line.startswith('window.HOSTELS = '): HOSTELS = json.loads(line[17:].rstrip().rstrip(';'))
-by_norm, by_core = {}, {}
+def tnorm(s):  # token-sorted, ignores word order: "amen hostel main" == "amen main hostel"
+    return ''.join(sorted(w for w in re.findall(r'[a-z0-9]+', (s or '').lower()) if w not in ('kumasi', 'knust')))
+ALIAS = {'adombihostel': 'Adom Bi Heights', 'pinamanghostel': 'Piramang Hostel',
+         'shalomkubitzhostel': 'Shalom Kigutz', 'wagyingohostel': 'Wagyingo Main Hostel'}
+by_norm, by_core, by_tnorm = {}, {}, {}
 for h in HOSTELS:
     by_norm.setdefault(norm(h['name']), h)
     by_core.setdefault(core(h['name']), h)
+    by_tnorm.setdefault(tnorm(h['name']), h)
 
 def slug_to_db(url):
     m = re.search(r'/hostels/([^/?]+)', url)
     if not m: return None
     s = re.sub(r'-(kumasi|knust)$', '', m.group(1)).replace('-', ' ')
     n, c = norm(s), core(s)
+    if norm(s) in ALIAS: return by_norm.get(norm(ALIAS[norm(s)]))
     if n in by_norm: return by_norm[n]
     if len(c) >= 4 and c in by_core: return by_core[c]
+    if tnorm(s) in by_tnorm: return by_tnorm[tnorm(s)]
     for k, h in by_norm.items():
         if len(n) >= 6 and len(k) >= 6 and (n in k or k in n): return h
     return None
