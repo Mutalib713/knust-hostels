@@ -104,6 +104,13 @@ add_hostel('Morning Star Hostel', 'Bomso', '0245247533', '(Bomso branch, was mis
 # 16) Casa Maria (Ayeduase) is a separate place from La Casa Maria (Emena) -> add it
 add_hostel('Casa Maria', 'Ayeduase', '0208185998', '(number shared w/ La Casa Maria - verify)')
 
+# 17) obvious display-name typos
+NAME_FIX = {'paradiseregainedhostleknust': 'Paradise Regained Hostel', 'bluearkhostel': 'Blue Ark Hostel'}
+for h in HOSTELS:
+    nf = NAME_FIX.get(norm(h['name']))
+    if nf and h['name'] != nf:
+        log.append(f"Name fix: '{h['name']}' -> '{nf}'"); h['name'] = nf
+
 # ---- recompute META + write ----
 amen = Counter(a for r in HOSTELS for a in r.get('amenities', []))
 tc = Counter(r.get('type') for r in HOSTELS)

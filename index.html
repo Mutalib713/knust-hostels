@@ -606,8 +606,10 @@
     const AREA_SYN=[[/ayeduase|new ?site/,'Ayeduase'],[/kotei/,'Kotei'],[/bomso/,'Bomso'],[/gaza|ghana hostel/,'Gaza'],[/kentin?krono|nsenie/,'Kentinkrono'],[/oduom/,'Oduom'],[/boadi/,'Boadi'],[/anloga/,'Anloga Junction'],[/ayigya/,'Ayigya'],[/deduako/,'Deduako'],[/oforikrom/,'Oforikrom'],[/anwomaso/,'Anwomaso'],[/gyinyase/,'Gyinyase'],[/emena/,'Emena'],[/appiadu/,'Appiadu'],[/susuanso/,'Susuanso (campus edge)'],[/on ?campus|\bhalls?\b/,'On Campus (KNUST)']];
     const COLLEGE_SYN=[[/engineer/,'Engineering'],[/\bscience\b|\bcos\b/,'Science'],[/\bart\b|built environment|architect|cabe/,'Art & Built Environment'],[/business|\bksb\b|humanities|social scien|\blaw\b/,'Humanities & Social Sciences (KSB)'],[/health|medic|pharmac|nursing|\bchs\b/,'Health Sciences'],[/agric|natural resource|\bcanr\b/,'Agriculture & Natural Resources']];
     function parse(t){
-      const s={areas:[],college:null,priceMin:null,priceMax:null,confirmed:false,photos:false,near:false,walk:false,best:false,cheapest:false,roomType:null,type:null,minRating:null};
+      const s={areas:[],exAreas:[],college:null,priceMin:null,priceMax:null,confirmed:false,photos:false,near:false,walk:false,best:false,cheapest:false,roomType:null,type:null,minRating:null,amenities:[]};
       AREA_SYN.forEach(([re,a])=>{if(re.test(t)&&(M.areas||[]).includes(a)&&!s.areas.includes(a))s.areas.push(a);});
+      if(/\b(not|except|excluding|besides|outside|other than|apart from|aside from|avoid|away from)\b/.test(t)&&s.areas.length){s.exAreas=s.areas;s.areas=[];}  // "NOT in Ayeduase" -> exclude
+      [[/wi-?fi|internet/,'Wi-Fi'],[/air ?cond|conditioned|\bac\b/,'Air-conditioned'],[/pool|swimming/,'Pool'],[/parking|car ?park/,'Parking'],[/kitchen|cook/,'Kitchen'],[/laundry/,'Laundry service'],[/gym|fitness/,'Fitness center'],[/restaurant|canteen/,'Restaurant']].forEach(([re,a])=>{if(re.test(t)&&!s.amenities.includes(a))s.amenities.push(a);});
       for(const [re,c] of COLLEGE_SYN){if(re.test(t)&&(M.colleges||[]).includes(c)){s.college=c;break;}}
       s.confirmed=/confirm|verified|trusted|with (a )?(number|contact)|can call|reachable/.test(t);
       s.photos=/photo|picture|image|see inside|\bpics?\b/.test(t);
@@ -627,10 +629,12 @@
       else if(nums.length&&/ghs|cedis|budget|price|afford|spend/.test(t))s.priceMax=nums[0];
       return s;
     }
-    const has=s=>s.areas.length||s.college||s.priceMin!=null||s.priceMax!=null||s.confirmed||s.photos||s.near||s.best||s.cheapest||s.roomType||s.type||s.minRating!=null;
+    const has=s=>s.areas.length||s.exAreas.length||s.college||s.priceMin!=null||s.priceMax!=null||s.confirmed||s.photos||s.near||s.best||s.cheapest||s.roomType||s.type||s.minRating!=null||s.amenities.length;
     function search(s){
       let r=H.filter(h=>{
         if(s.areas.length&&!s.areas.includes(h.area))return false;
+        if(s.exAreas.length&&s.exAreas.includes(h.area))return false;
+        if(s.amenities.length&&!s.amenities.every(a=>(h.amenities||[]).includes(a)))return false;
         if(s.college&&!(h.colleges||[]).includes(s.college))return false;
         if(s.confirmed&&!h.confirmed)return false;
         if(s.photos&&!(h.images&&h.images.length))return false;
@@ -651,9 +655,11 @@
       const p=[];
       if(s.type)p.push({'Hostel':'hostels','Guest house & Hotel':'guest houses / hotels','Apartment / Self-contained':'apartments'}[s.type]||'');
       if(s.areas.length)p.push('in '+s.areas.join(' or '));
+      if(s.exAreas.length)p.push('outside '+s.exAreas.join(' and '));
       if(s.college)p.push('handy for '+s.college.replace(' (KSB)','')+' students');
       if(s.confirmed)p.push('with a confirmed contact');
       if(s.photos)p.push('with photos');
+      if(s.amenities.length)p.push('with '+s.amenities.join(' & '));
       if(s.roomType)p.push(s.roomType+'-in-a-room');
       if(!noP){if(s.priceMin!=null&&s.priceMax!=null)p.push('between GHS '+s.priceMin.toLocaleString()+' and '+s.priceMax.toLocaleString());else if(s.priceMax!=null)p.push('under GHS '+s.priceMax.toLocaleString());else if(s.priceMin!=null)p.push('above GHS '+s.priceMin.toLocaleString());}
       if(s.walk)p.push('within walking distance');else if(s.near)p.push('close to campus');
@@ -676,26 +682,27 @@
       if(!words.length)return [];
       const joined=nrm(words.join(''));
       let out=H.filter(h=>nrm(h.name).indexOf(joined)>=0);                       // whole phrase in the name
-      if(!out.length)out=H.filter(h=>words.some(w=>w.length>=4&&nrm(h.name).indexOf(nrm(w))>=0)); // any distinctive word
+      if(!out.length)out=H.filter(h=>{const nw=h.name.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);return words.some(w=>w.length>=4&&nw.some(x=>x===w||x.startsWith(w)));}); // distinctive WHOLE word (avoids "allow"->"Hallowed")
       return out.slice(0,8);
     }
     function welcome(){return "Hi, I'm <b>Ama</b> — your KNUST hostel finder. Tell me what you're after and I'll search all <b>"+M.total+"</b> hostels. e.g. “confirmed hostels in Ayeduase under 3000” or “cheapest near campus”.";}
     function answer(q){
       const t=q.toLowerCase().trim();
       if(!t)return {text:'Tell me what you need — e.g. “cheap hostels in Ayeduase with a confirmed contact”.'};
-      if(/^(hi|hello|hey|yo|hiya|good (morning|afternoon|evening)|akwaaba)/.test(t)||/who are you|what can you do|how (do|does)|help me|^help$/.test(t))return {text:welcome()};
-      if(/^(thanks|thank you|thx|ok|okay|nice|cool|great)/.test(t)&&t.length<16)return {text:"Anytime! Ask me about any KNUST hostel — area, budget, confirmed contacts, photos or distance."};
-      if(/how many hostels|total hostels|number of hostels/.test(t))return {text:'There are <b>'+M.total+'</b> hostels here across '+(M.areas||[]).length+' areas — <b>'+M.confirmed+'</b> with confirmed contacts and <b>'+M.with_price+'</b> with published prices.'};
+      if(/^(hi|hello|hey|yo|hiya|good (morning|afternoon|evening)|akwaaba)/.test(t)||/who are you|what can you do|how (do|does)|help me|^help$/.test(t))return {text:welcome(),meta:true};
+      if(/^(thanks|thank you|thx|ok|okay|nice|cool|great)/.test(t)&&t.length<16)return {text:"Anytime! Ask me about any KNUST hostel — area, budget, confirmed contacts, photos or distance.",meta:true};
       const s=parse(t);
       const nm=named(t);
-      // a hostel-NAME match wins over a type-only parse, so "Frontline Inn" isn't read as "show me inns"
-      const onlyType=s.type&&!s.areas.length&&s.priceMin==null&&s.priceMax==null&&!s.confirmed&&!s.photos&&!s.near&&!s.walk&&!s.best&&!s.cheapest&&!s.roomType&&!s.category&&s.minRating==null;
-      if(nm.length&&(onlyType||!has(s))){
+      const isCount=/\bhow many\b|\bnumber of\b|\bcount\b|how many are/.test(t);
+      // a hostel-NAME match wins over a type-only parse, so "Frontline Inn" isn't read as "show me inns" (but not for count questions)
+      const onlyType=s.type&&!s.areas.length&&!s.exAreas.length&&s.priceMin==null&&s.priceMax==null&&!s.confirmed&&!s.photos&&!s.near&&!s.walk&&!s.best&&!s.cheapest&&!s.roomType&&!s.minRating&&!s.amenities.length;
+      if(nm.length&&!isCount&&(onlyType||!has(s))){
         if(nm.length===1){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:[h]};}
         return {text:'I found <b>'+nm.length+'</b> matching that — '+nm.slice(0,6).map(h=>esc(h.name)).join(', ')+'. Tap any for details.',cards:nm.slice(0,6)};
       }
-      if(has(s))return compose(s,search(s));
-      return {text:"I can search by <b>area</b>, <b>budget</b>, <b>college</b>, <b>confirmed contact</b>, photos or distance. Try a suggestion below ↓"};
+      if(has(s)){const res=search(s);if(isCount)return {text:'There are <b>'+res.length+'</b> hostel'+(res.length===1?'':'s')+' '+(describe(s,true)||'matching that')+'.',cards:res.slice(0,6)};return compose(s,res);}
+      if(isCount||/total hostels|all hostels/.test(t))return {text:'There are <b>'+M.total+'</b> hostels here across '+(M.areas||[]).length+' areas — <b>'+M.confirmed+'</b> with confirmed contacts and <b>'+M.with_phone+'</b> with a phone number.',meta:true};
+      return {text:"I can search by <b>area</b>, <b>budget</b>, <b>college</b>, <b>confirmed contact</b>, photos, amenities or distance. Try a suggestion below ↓"};
     }
     function cardHTML(h){
       const price=h.price_from?'from GHS '+h.price_from.toLocaleString():'',km=h.km_from_knust!=null?h.km_from_knust+' km':'',rat=h.rating?'★ '+h.rating.toFixed(1):'New';
@@ -710,11 +717,13 @@
     async function respond(q){
       addMsg('user',esc(q));const tp=typing();
       const a=answer(q);
-      const cands=(a.cards&&a.cards.length)?a.cards:(lastCands.length?lastCands:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12));
+      if(a.meta){tp.remove();addMsg('bot','<p>'+a.text+'</p>');return;}  // canned info answer -> don't pass stale hostels to Gemini
+      const fu=/\b(it|its|it's|that|those|these|they|them|this|the one|the number|the price|cheaper|closer|nearer|another|other one|more|same)\b/i.test(q);
+      const cands=(a.cards&&a.cards.length)?a.cards:((fu&&lastCands.length)?lastCands:H.slice().sort((x,y)=>(y._pop||0)-(x._pop||0)).slice(0,12));
       if(a.cards&&a.cards.length)lastCands=a.cards;  // remember for follow-ups like "where is it?"
       if(WORKER_URL){
         try{
-          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,type:h.type,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone}));
+          const compact=cands.slice(0,20).map(h=>({name:h.name,area:h.area,type:h.type,price:h.price_from,km:h.km_from_knust,rating:h.rating,confirmed:h.confirmed,phone:h.phone,amenities:(h.amenities||[]).slice(0,6)}));
           const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:hist.slice(-6),hostels:compact})});
           if(!res.ok)throw 0;const d=await res.json();const reply=(d.reply||'').trim();if(!reply)throw 0;
           tp.remove();
