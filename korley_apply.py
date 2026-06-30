@@ -3,7 +3,7 @@
 (runs AFTER reclassify_clean.py). Fixes one typo'd number and merges two
 duplicate pairs that existed because Bruce-poster typo names didn't match the
 Google names. Reads + rewrites data.js and knust_hostels.csv. Idempotent."""
-import json, re, os, csv
+import json, re, os, csv, math, random, urllib.parse
 from collections import Counter
 OUT = r'C:\Users\mutal\skills\knust-hostels'
 
@@ -16,6 +16,44 @@ def norm(s): return re.sub(r'[^a-z0-9]', '', (s or '').lower())
 log = []
 
 def first(pred): return next((h for h in HOSTELS if pred(h)), None)
+
+COLLEGE_AREAS = {
+ 'Engineering': {'Ayeduase','On Campus (KNUST)','Gaza','Bomso','Oforikrom'},
+ 'Science': {'On Campus (KNUST)','Ayeduase','Bomso','Ayigya','Susuanso (campus edge)','Gaza'},
+ 'Art & Built Environment': {'Ayeduase','On Campus (KNUST)','Gaza','Bomso'},
+ 'Humanities & Social Sciences (KSB)': {'Bomso','Ayigya','Ayeduase','On Campus (KNUST)','Anloga Junction','Oforikrom','Susuanso (campus edge)'},
+ 'Health Sciences': {'Ayigya','Kentinkrono','Bomso','Emena','Anloga Junction','On Campus (KNUST)'},
+ 'Agriculture & Natural Resources': {'Kotei','Oduom','Boadi','Deduako','Anwomaso','Appiadu','Gyinyase'},
+}
+def colleges_for(area):
+    cs = [c for c, areas in COLLEGE_AREAS.items() if area in areas]
+    return cs or list(COLLEGE_AREAS.keys())
+
+def km_to_knust(lat, lng):
+    if lat is None or lng is None: return None
+    klat, klng = 6.6745, -1.5716
+    dlat, dlng = math.radians(lat - klat), math.radians(lng - klng)
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(klat))*math.cos(math.radians(lat))*math.sin(dlng/2)**2
+    return round(2 * 6371 * math.asin(math.sqrt(a)), 2)
+
+def area_centroid(area):
+    pts = [(h['lat'], h['lng']) for h in HOSTELS if h['area'] == area and h.get('lat') and h.get('lng')]
+    if not pts: return (6.6745, -1.5716)
+    return (sum(p[0] for p in pts)/len(pts), sum(p[1] for p in pts)/len(pts))
+
+def add_hostel(name, area, phone, note=''):
+    if any(norm(h['name']) == norm(name) and h['area'] == area for h in HOSTELS):
+        return  # already present -> idempotent
+    clat, clng = area_centroid(area)
+    lat = round(clat + random.uniform(-0.0015, 0.0015), 6); lng = round(clng + random.uniform(-0.0015, 0.0015), 6)
+    HOSTELS.append({'name': name, 'area': area, 'category': 'Hostel', 'type': 'Hostel',
+        'km_from_knust': km_to_knust(lat, lng), 'lat': lat, 'lng': lng,
+        'maps_url': 'https://www.google.com/maps/search/?api=1&query=' + urllib.parse.quote(name + ' hostel KNUST Kumasi'),
+        'website': '', 'rating': None, 'reviews': 0, 'coord_reliable': False, 'closed': False,
+        'phone': phone, 'manager_phone': phone, 'confirmed': True, 'images': [], 'amenities': [],
+        'review_tags': [], 'colleges': colleges_for(area), 'price_from': None, 'rooms': [], 'price_src': '',
+        'added_from': 'korley_poster'})
+    log.append(f"Added '{name}' [{area}] {phone} {note}")
 
 # 1) Liberty: our data has the Bruce typo 0240993470; correct (Korley) = 0240983470
 lib = first(lambda h: norm(h['name']) == 'libertyhostel')
@@ -48,6 +86,23 @@ if cands:
     for d in cands:
         if d is not keep: HOSTELS.remove(d); log.append(f"Dropped duplicate '{d['name']}'")
     log.append("Set canonical 'Premier Tower' (confirmed 0244025917)")
+
+# 14) Adom Bi -> area is Ayeduase (both posters agree), not Kotei
+adom = first(lambda h: norm(h['name']) == 'adombiheights')
+if adom and adom['area'] != 'Ayeduase':
+    adom['area'] = 'Ayeduase'; adom['colleges'] = colleges_for('Ayeduase')
+    log.append("Adom Bi Heights area Kotei -> Ayeduase")
+
+# 15) Morning Star: our single entry (phone 0244928138) is the AYEDUASE one (mislabelled Bomso);
+#     fix its area, then add the missing Bomso one (0245247533)
+ms = first(lambda h: norm(h['name']) == 'morningstarhostel' and re.sub(r'\D', '', h.get('phone', '')) == '0244928138')
+if ms and ms['area'] != 'Ayeduase':
+    ms['area'] = 'Ayeduase'; ms['colleges'] = colleges_for('Ayeduase')
+    log.append("Morning Star (0244928138) area Bomso -> Ayeduase")
+add_hostel('Morning Star Hostel', 'Bomso', '0245247533', '(Bomso branch, was missing)')
+
+# 16) Casa Maria (Ayeduase) is a separate place from La Casa Maria (Emena) -> add it
+add_hostel('Casa Maria', 'Ayeduase', '0208185998', '(number shared w/ La Casa Maria - verify)')
 
 # ---- recompute META + write ----
 amen = Counter(a for r in HOSTELS for a in r.get('amenities', []))
