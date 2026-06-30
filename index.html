@@ -700,9 +700,9 @@
       const s=parse(t);
       const nm=named(t);
       const isCount=/\bhow many\b|\bnumber of\b|\bcount\b|how many are/.test(t);
-      // a hostel-NAME match wins over a type-only parse, so "Frontline Inn" isn't read as "show me inns" (but not for count questions)
-      const onlyType=s.type&&!s.areas.length&&!s.exAreas.length&&s.priceMin==null&&s.priceMax==null&&!s.confirmed&&!s.photos&&!s.near&&!s.walk&&!s.best&&!s.cheapest&&!s.roomType&&!s.minRating&&!s.amenities.length;
-      if(nm.length&&!isCount&&(onlyType||!has(s))){
+      // a hostel-NAME match wins when there's no real filter (only type/amenities, which are often part of "does X have wifi?")
+      const weakFilter=!s.areas.length&&!s.exAreas.length&&!s.college&&s.priceMin==null&&s.priceMax==null&&!s.confirmed&&!s.photos&&!s.near&&!s.walk&&!s.best&&!s.cheapest&&!s.roomType&&s.minRating==null;
+      if(nm.length&&!isCount&&(weakFilter||!has(s))){
         if(nm.length===1){const h=nm[0];return {text:"Here's <b>"+esc(h.name)+'</b> — '+esc(h.area)+(h.price_from?', from GHS '+h.price_from.toLocaleString():'')+(h.rating?', ★'+h.rating.toFixed(1):'')+(h.confirmed?', confirmed contact':'')+'. Tap it for photos, room prices & contact.',cards:[h]};}
         return {text:'I found <b>'+nm.length+'</b> matching that — '+nm.slice(0,6).map(h=>esc(h.name)).join(', ')+'. Tap any for details.',cards:nm.slice(0,6)};
       }
