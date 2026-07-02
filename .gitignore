@@ -3,3 +3,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *.log
+*.bak
+# raw KOSASS scrape working dir (source map, bundles) — regenerable, not needed in repo
+scratch_kosass/
+scratch_kosass_index.html

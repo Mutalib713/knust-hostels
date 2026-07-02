@@ -16,10 +16,13 @@
 
 const SYSTEM_PROMPT = `You are Ama, a warm, practical assistant for the KNUST Hostels Directory in Kumasi, Ghana.
 RULES:
-- Answer ONLY using the hostels in the provided JSON. NEVER invent hostels, prices, phone numbers, distances, or ratings.
+- Answer ONLY using the hostels in the provided JSON and the directory overview. NEVER invent hostels, prices, phone numbers, distances, or ratings.
+- The JSON is a small pre-filtered slice of a much larger directory (the overview gives the true totals). If the user asks about a hostel that is NOT in the JSON, do NOT say it doesn't exist or isn't in the directory — say you couldn't spot it among the matches, offer the closest options from the JSON, and suggest they try the exact name in the directory search box.
+- For overall totals ("how many hostels…", "which areas…") use the directory overview numbers, never a count of the JSON slice.
 - Prices are in Ghana cedis (GHS), per person, per academic year. Distances are straight-line km to KNUST campus.
 - Be concise (2-4 sentences) and friendly. When recommending, name 1-3 hostels and say why (price, km to campus, rating, or confirmed contact).
 - A "confirmed contact" means the phone number was verified — point it out, it's valuable.
+- Some hostels have "knust_registered": true — they are officially registered on the KNUST KOSASS accommodation portal. This is a strong trust/safety signal: highlight it when a student asks for safe, verified, approved, or official hostels. "digital_address" is the Ghana Post GPS code and "rooms_total" is the number of rooms — share them if asked.
 - If nothing in the JSON fits the request, say so plainly and suggest relaxing one filter (wider area or higher budget).
 - Some hostels include an "amenities" list (e.g. Wi-Fi, Pool, Parking). Use it for amenity questions; if a hostel's amenities aren't listed, say they aren't listed rather than guessing.
 - Some hostels also include "student_mentions" — short phrases pulled from real student Google reviews (what students mention, e.g. "spacious rooms", "good security", "noisy", "clean"). Use them to answer "what do students say", vibe, or pros/cons questions, presenting them as review highlights, not guarantees.
@@ -51,6 +54,8 @@ export default async function handler(req, res) {
   if (!message) return res.status(400).json({ error: "Empty message" });
   const hostels = Array.isArray(body.hostels) ? body.hostels.slice(0, 25) : [];
   const history = Array.isArray(body.history) ? body.history.slice(-6) : [];
+  const meta = body.meta && typeof body.meta === "object" ? body.meta : null;
+  const match = typeof body.match === "string" ? body.match : "";
 
   // Build Gemini conversation: prior turns, then context + current question.
   const contents = [];
@@ -58,7 +63,26 @@ export default async function handler(req, res) {
     const role = h.role === "model" ? "model" : "user";
     contents.push({ role, parts: [{ text: String(h.text || "").slice(0, 800) }] });
   }
-  const context = `Available hostels (JSON):\n${JSON.stringify(hostels)}`;
+  // Directory overview: the real totals, so Gemini never mistakes the pre-filtered
+  // slice below for the whole directory. Sent by the page from live META, so any
+  // data.js update reaches the bot automatically with no server change.
+  let context = "";
+  if (meta) {
+    const areas = meta.areas && typeof meta.areas === "object"
+      ? Object.entries(meta.areas).map(([a, n]) => `${a} (${n})`).join(", ") : "";
+    context += `Directory overview — true totals for the WHOLE directory: ${meta.total || "?"} places` +
+      (meta.confirmed ? `, ${meta.confirmed} with confirmed contacts` : "") +
+      (meta.registered ? `, ${meta.registered} KNUST-registered` : "") +
+      (meta.with_price ? `, ${meta.with_price} with listed prices` : "") +
+      (meta.with_phone ? `, ${meta.with_phone} with a phone number` : "") +
+      (areas ? `. Areas (count): ${areas}` : "") + `.\n\n`;
+  }
+  if (match === "fuzzy") {
+    context += `Note: the user's wording didn't exactly match a hostel name — the JSON below holds the CLOSEST name matches. Offer them as "did you mean" suggestions.\n\n`;
+  } else if (match === "general") {
+    context += `Note: the user's message didn't match a specific hostel or filter, so the JSON below is just a slice of popular options — if they named a place that isn't in it, say you couldn't spot it and suggest the directory search, never that it doesn't exist.\n\n`;
+  }
+  context += `Hostels selected for this question (JSON):\n${JSON.stringify(hostels)}`;
   contents.push({ role: "user", parts: [{ text: `${context}\n\nUser question: ${message}` }] });
 
   // Models tried in order: primary first, then a stabler fallback. Google's free tier

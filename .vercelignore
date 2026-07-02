@@ -1,9 +1,13 @@
 # Files kept in the repo (for reproducibility) but NOT served on the live site.
-# The live dashboard only needs: index.html, data.js, hostelhubb-logo.jpg, api/, knust_hostels.csv
+# The live dashboard only needs: index.html, data.js, ama-brain.js, hostelhubb-logo.jpg, api/, knust_hostels.csv
 
 # Build pipeline
 *.py
 __pycache__/
+
+# Bot QA suite (run locally: node test_ama.js)
+test_ama.js
+.claude/
 
 # Old Cloudflare Worker (the AI now runs on api/chat.js) and an early prototype
 worker/
@@ -25,3 +29,8 @@ mp_contacts.json
 mp_geocode.json
 getrooms_prices.json
 prices.json
+
+# Raw KOSASS scrape snapshot + image allowlist — final data is baked into data.js
+kosass_residences.json
+kosass_img_allowlist.txt
+scratch_kosass/
